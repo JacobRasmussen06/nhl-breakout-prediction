@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Jacob Rasmussen">
+
+<title>Predicting NHL Breakout Forwards Using Machine Learning</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="draft_files/libs/clipboard/clipboard.min.js"></script>
+<script src="draft_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="draft_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="draft_files/libs/quarto-html/popper.min.js"></script>
+<script src="draft_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="draft_files/libs/quarto-html/anchor.min.js"></script>
+<link href="draft_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="draft_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="draft_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="draft_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="draft_files/libs/bootstrap/bootstrap-efbb37e9afcc02144ebbc7afd12a776f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Predicting NHL Breakout Forwards Using Machine Learning</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Jacob Rasmussen </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>Each year in the National Hockey League (NHL), there are players denoted as “breakout players”. Generally, this means that their stat production increased from one year to the next and made them a more valuable contributor to their team. Some of these players were not unexpected; highly touted prospects from the get-go who came with an expectation of stardom, and their production increase feels inevitable. Others, however, unexpectedly break out after years of average production or limited opportunity, making them seemingly appear out of nowhere.</p>
+<p>Correctly identifying these players before their breakouts has long been one of the more difficult aspects of hockey analytics. Traditional statistics such as goals (G) and points (P) are useful for describing the current production of a player, but are often lackluster at indicating the future output of a player. Consequently, analysts have relied on advanced statistics and other metrics alongside the current production to uncover patterns or underlying potential that may lead to future value.</p>
+<p>The goal of this project is to investigate whether machine learning tools are able to successfully identify breakout players before their breakout season occurs. A collection of metrics describing an individual player’s production, both on and beneath the surface, opportunity, and year-to-year development was constructed. Multiple models that classify players as breakout candidates were trained and evaluated.</p>
+<p>In addition to evaluating model performance, this project examines case studies to illustrate the successes and limitations of this approach. Finally, the models were applied to the latest NHL season to identify breakout candidates for next season.</p>
+</section>
+<section id="data-documentation" class="level2">
+<h2 class="anchored" data-anchor-id="data-documentation">Data Documentation</h2>
+<p>The data used in this project were obtained from MoneyPuck.com, an independent hockey analytics website created by Peter Tanner. MoneyPuck provides NHL statistics from the 08-09 season to the current season publicly, including the traditional metrics such as goals and points but also advanced statistics such as Expected Goals (xG), specific data on shots such as their danger level (high, medium, low), possession metrics such as Corsi and Fenwick, and much more.</p>
+<p>Player-level data for all NHL skaters were downloaded from MoneyPuck.com’s publicly available datasets and used to construct the models. These data served as a foundation for the project’s model development and feature engineering.</p>
+<p>The author gratefully acknowledges MoneyPuck.com for making these data publicly available.</p>
+</section>
+<section id="defining-a-breakout" class="level2">
+<h2 class="anchored" data-anchor-id="defining-a-breakout">Defining a Breakout</h2>
+<p>While the term “breakout player” is commonly used to describe the concept of increased production and players becoming stars, there is no universally recognized definition of what makes up a breakout player. For this project, a hard line definition was set to avoid any issues. Firstly, the decision was made to set the scope of this project only at forwards. The standard for a good NHL defenseman is far too different than the standard for a good NHL forward, so it is best to separate them.</p>
+<p>Then, it was defined that any player, to be considered a breakout player, must play in at least 60% of their team’s games in both the season before their breakout and the season of their breakout. This was done to avoid breakout candidates simply being players that were unavailable due to injuries and keep the sample size consistent. Instead of just setting 50 games played, which is approximately 60% of 82, the amount of games in the NHL regular season, 60% was chosen because some seasons in the dataset, namely the lockout shortened 2012-13 season, as well as the 2019-20 and 20-21 seasons shortened by the COVID-19 pandemic, did not have 82 games.</p>
+<p>Next, it was chosen that a breakout player must have never achieved 60 points before their breakout season. This was set after some testing with the models, as the model was catching superstar players who had a down year and then bounced back as “breakouts”, when traditional thinking would correctly identify these players not as a breakouts but as bounce-backs. On a similar vein, it was also decided that the player’s breakout year points total must be a career high and be at least 40 points. This rule makes it so the breakout players are actual producers on ice, and the career high assists in catching more bounce-back players and filtering them out as ineligible to break out.</p>
+<p>Finally, a couple of parameters surrounding the players points-per-game (PPG) statistic were chosen. The player’s PPG must increase by at least 20%, while the actual PPG stat itself must increase by .15. These were each chosen to make sure that players that broke out actually made meaningful improvements to their production, both on the literal scale of increasing their points per game output, but also meaningfully increasing the scaled PPG.</p>
+<div id="fig-breakouts" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-breakouts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/breakoutsbyyear.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-breakouts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Number of players classified as breakout players in each season.
+</figcaption>
+</figure>
+</div>
+<p>As seen in <a href="#fig-breakouts" class="quarto-xref">Figure&nbsp;1</a>, there was quite a large fluctuation of breakouts, and while the parameters were able to allow for some breakouts in the shortened seasons, there were far less breakouts produced than average. It was decided that while this is a shortcoming of the definition, it was a trade-off for creating a consistent set of parameters that was ultimately worth it for this project.</p>
+</section>
+<section id="feature-engineering" class="level2">
+<h2 class="anchored" data-anchor-id="feature-engineering">Feature Engineering</h2>
+<p>While the MoneyPuck.com dataset contained many valuable statistics, additional variables were engineered to help capture the growth, experience, and development of a player over time. The goal of feature engineering was to quantify how a player’s performance was changing from season to season.</p>
+<section id="production-variables" class="level3">
+<h3 class="anchored" data-anchor-id="production-variables">Production Variables</h3>
+<p>Several statistics to quantify a player’s offensive production were included directly from the original dataset. These variables included goals, expected goals, high-danger expected goals, points per game, and Corsi percentage. These statistics were added because they measure both the on ice raw production of the player and their underlying ability to drive play.</p>
+</section>
+<section id="opportunity-variables" class="level3">
+<h3 class="anchored" data-anchor-id="opportunity-variables">Opportunity Variables</h3>
+<p>How much a player can produce is heavily influenced by how much opportunity they get on the ice. Therefore, it was deemed important to include variables that quantified this opportunity. To capture this, ice time was included, as well as offensive zone start percentage — the percent of a player’s shifts that begin in the offensive zone. These variables tell a story of how much opportunity a player gets on the ice and the trust level their coaches put in them.</p>
+</section>
+<section id="growth-variables" class="level3">
+<h3 class="anchored" data-anchor-id="growth-variables">Growth Variables</h3>
+<p>As a breakout player is hallmarked by their growth and production increase, several variables that indicate a player’s previous year-to-year growth were included. The one-year change in points, expected goals, icetime, shots, and Corsi were included to indicate this growth, as well as relative growth measures to account for differences in baseline production between players.</p>
+</section>
+<section id="long-term-development-variables" class="level3">
+<h3 class="anchored" data-anchor-id="long-term-development-variables">Long-Term Development Variables</h3>
+<p>In addition to year-to-year growth, two-year growth metrics were calculated to better describe a player’s broader development. These two-year changes in points, expected goals, and ice time help give a better understanding on how a player has been slowly growing and developing as a player as their career progresses. Additionally, the player’s previous career best points, and their experience in the league in years, were calculated and included to provide context for a player’s career stage.</p>
+<p>In combining these metrics of production, opportunity, growth, and long-term development, the resulting feature set captured both the player’s current production and their long term trajectory, which determined whether there would be future improvement.</p>
+</section>
+</section>
+<section id="building-a-model" class="level2">
+<h2 class="anchored" data-anchor-id="building-a-model">Building a Model</h2>
+<p>Once the target variable was defined and a feature set was established, the problem could now be classified as a binary classification task. For each player-season, the objective of a model was to predict whether the player would experience a breakout in the following season. More generally, the model estimated the probability that a player would satisfy the criteria previously established for a “breakout player”.</p>
+<section id="choosing-an-algorithm" class="level3">
+<h3 class="anchored" data-anchor-id="choosing-an-algorithm">Choosing an Algorithm</h3>
+<p>During the development process, several different machine learning algorithms were considered to create the final model. Logistic regression was first used as a baseline model due to its simplicity and ability to easily be interpreted. Random forests were also heavily considered due to their ability to capture nonlinear relationships and interactions between the variables, prevalent in our feature set. Finally, Extreme Gradient Boosting (XGBoost) models were investigated due to their strong performance on tabular datasets. Their ability to model complex relationships without extensive preprocessing was also a deciding factor.</p>
+<p>The usage of multiple different algorithms allowed for the exploration of the strengths and weaknesses of differing approaches to be compared without arbitrarily assuming a single modeling technique would provide the best results.</p>
+</section>
+<section id="train-and-test-split" class="level3">
+<h3 class="anchored" data-anchor-id="train-and-test-split">Train and Test Split</h3>
+<p>To correctly evaluate model performance on data it hadn’t seen before, the dataset was split into a training set and a testing set. This provided a more realistic estimate of the model performance as it was testing itself on data it had not seen before.</p>
+<p>More specifically, the split was made to achieve a 70-30 split between the training data and the testing data. The easiest place to split to approximate this was following the 2020-21 season. This means that the training set was data from the very first season in the dataset, 2008-09, to the 2020-21 season, and that the testing set was data from 2021-22 to 2024-25. Notably, the most recent season, 2025-26, was not included in either set because the season was not over at the time this project was conceived.</p>
+</section>
+<section id="hyperparameter-tuning" class="level3">
+<h3 class="anchored" data-anchor-id="hyperparameter-tuning">Hyperparameter Tuning</h3>
+<p>The models hyperparameters were tuned through repeated experimentation. Parameters controlling variables such as tree depth, learning rate, and model complexity were adjusted in order to balance overfitting with performance. The objective of this tuning was to develop the most capable model to handle a new dataset of player-seasons, not just to create the most effective model to maximize performance on the training data.</p>
+</section>
+<section id="model-selection" class="level3">
+<h3 class="anchored" data-anchor-id="model-selection">Model Selection</h3>
+<p>Following the comparison of the different algorithms, XGBoost was selected as the primary modeling approach due to its strong performance in the evaluation phase. While the logistic regression model provided an excellent baseline, it failed to reach the same performance as either the random forest or XGBoost algorithms. Random forest provided competitive performance, but it failed to hit the same balance of predictive ability, flexibility, and calibration as XGBoost.</p>
+<p>XGBoost’s ability to effectively capture nonlinear relationships between production, opportunity, and growth made it particularly well suited for this problem. As a result, subsequent analyses focused primarily on XGBoost models.</p>
+<p>The performance and interpretation of the XGBoost models is examined in the following sections.</p>
+</section>
+</section>
+<section id="model-evaluation" class="level2">
+<h2 class="anchored" data-anchor-id="model-evaluation">Model Evaluation</h2>
+<p>Evaluating the model’s effectiveness for breakout prediction proved to be a unique challenge because breakout players only represent a very small percentage of total player-seasons at around 3% of all player-seasons with the given parameters. Thus, a model built to maximize accuracy should give all players 0 probability to break out and it would be the most accurate model by far, despite providing no usefulness to solving the problem.</p>
+<p>To rectify this, evaluation of the models primarily focused on two metrics. First, Precision at K (P@K) — sometimes hereafter also referred to as Top K Precision. It represents the proportion of actual breakout players contained in the top K of the model’s ranked list of breakout probabilities. For example, if a model’s top 10 in probability contained 4 true breakout players, it is said to have a P@10 or Top 10 Precision of 4/10 or .4. This method of evaluation was chosen because of its practicality given the problem the project is trying to solve. It directly evaluates how well a given model does at identifying correct breakout candidates, which can be extended and used in the present and future seasons.</p>
+<p>The second metric used was Area Under the Receiver-Operating Curve (AUC). The Receiver-Operating Curve (ROC) is obtained by graphing the True Positive Rate (TPR) over the False Positive Rate (FPR), and the AUC is simply the area under that curve. It represents the probability that the model, if given a random negative result and a random positive result. In this case, it means ranking a player who indeed broke out above a player who did not. Therefore, the scale for AUC is 0 to 1, and a higher AUC indicates the model is better able to distinguish breakout players from non-breakout players.</p>
+<section id="model-comparison" class="level3">
+<h3 class="anchored" data-anchor-id="model-comparison">Model Comparison</h3>
+<p>During the course of tuning a model, five different versions of XGBoost algorithm with different parameters and features were tested, as well as two different versions of Random Forest and a singular version of logistic regression. Performance of these models was compared using the evaluators AUC and Top-K Precision as explained in the previous section.</p>
+<div id="fig-auc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-auc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/aucbymodel.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-auc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: AUC of each model tested.
+</figcaption>
+</figure>
+</div>
+<p>As seen in <a href="#fig-auc" class="quarto-xref">Figure&nbsp;2</a>, the XGBoost models dominated in terms of AUC. While the gains between the models were marginal, they were still gains, and the two models that eventually became the two models that were used, XGBoost v4 Precision and XGBoost v4 Coverage, were the two best models by AUC.</p>
+<div id="fig-top10" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-top10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/top10precision.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-top10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Top 10 Precision of each model.
+</figcaption>
+</figure>
+</div>
+<div id="fig-top30" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-top30-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/top30precision.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-top30-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: Top 30 Precision of each model.
+</figcaption>
+</figure>
+</div>
+<div id="fig-top50" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-top50-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/top50precision.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-top50-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Top 50 Precision of each model.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-top10" class="quarto-xref">Figure&nbsp;3</a>, <a href="#fig-top30" class="quarto-xref">Figure&nbsp;4</a>, and <a href="#fig-top50" class="quarto-xref">Figure&nbsp;5</a> show the P@K of each model. This produced some interesting insights that helped justify the model selection. Firstly, the XGBoost v4 Precision dominated Top-10 Precision, which landed it its name. It proved to be an incredibly precise model, taking in less features than the coverage model and tuning the parameters slightly differently, leading to a more precise top 10 and 30. The coverage model, however, falters in the top 10 and top 30, but shines in the 30-50 range, much like the XGBoost v3 model whose features it used. The hypertuning of the XGBoost v3 model gave the coverage model its AUC without sacrificing its Top-50 coverage, making it a useful model when used alongside the precision model.</p>
+<div id="fig-comparison" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/precisionvcoverage.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6: Top-K Precision of the two final models.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-comparison" class="quarto-xref">Figure&nbsp;6</a> shows the contrast between the two models directly. We see the coverage model’s strength at the lesser level between the top 10 and the rest of the top 50, as well as the precision model’s strong top 10.</p>
+<p>The following table summarizes each model used during the process’s performance with the evaluators.</p>
+<table class="caption-top table">
+<caption>Table 1: Summary of Model Performance</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Model</th>
+<th style="text-align: right;">AUC</th>
+<th style="text-align: right;">P@10</th>
+<th style="text-align: right;">P@30</th>
+<th style="text-align: right;">P@50</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">GLM</td>
+<td style="text-align: right;">0.8628</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">10</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">XGBoost v1</td>
+<td style="text-align: right;">0.8979</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Random Forest v1</td>
+<td style="text-align: right;">0.8821</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">XGBoost v2</td>
+<td style="text-align: right;">0.8984</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Random Forest v2</td>
+<td style="text-align: right;">0.8866</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">XGBoost v3</td>
+<td style="text-align: right;">0.8943</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">13</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">XGBoost v4 Precision</td>
+<td style="text-align: right;">0.9037</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">XGBoost v4 Coverage</td>
+<td style="text-align: right;">0.9122</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">13</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="limitations" class="level3">
+<h3 class="anchored" data-anchor-id="limitations">Limitations</h3>
+<p>Several limitations are considered while evaluating the performance of the models. Firstly, the rare nature of breakout seasons made for a limited number of positive observations. Secondly, while the models did an apt job at predicting players, far better than the chance of just randomly selecting a player to break out, it still was unable to capture more unpredictable factors in player development. The dataset does not quantify and predict injuries, coach decisions, linemate quality, and team success. No statistical model can fully account for the uncertainty of player development.</p>
+<p>However, the two models chosen demonstrated a strong ability to identify signals of a breakout and produced relatively accurate results. The following sections examine more features of the chosen models and how they can be interpreted.</p>
+</section>
+</section>
+<section id="model-interpretation" class="level2">
+<h2 class="anchored" data-anchor-id="model-interpretation">Model Interpretation</h2>
+<p>In contrast to simply evaluating how well a model does at certain metrics, it can be useful to know what exactly the model learned and how we can understand its predictions. This includes examining a model’s behavior, seeing what is important to it, what its predictions are doing, and how we can move forward with them.</p>
+<section id="which-variables-matter" class="level3">
+<h3 class="anchored" data-anchor-id="which-variables-matter">Which Variables Matter?</h3>
+<p>To examine which factors matter most, feature importance values were extracted from the XGBoost Coverage v4 model and analyzed. Feature importance is a metric that calculates a score for each input feature based on how much it contributes to a model’s predictions. A higher score indicates a stronger influence.</p>
+<div id="fig-importance" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-importance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/importance.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-importance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;7: Feature importance.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-importance" class="quarto-xref">Figure&nbsp;7</a> shows that a few features were extremely important, and then more features were less important but still valuable to the model. As seen, Expected Goals and Previous Best Points were the two most important features. This makes logical sense, given that xG is a very telling and useful metric at showing underlying production, while the previous best points feature was most certainly extremely useful at predicting negatives, given the parameters and the unlikelihood of someone with an already relatively high previous career high in points to break out again.</p>
+<p>Other important features, such as points per game, Corsi%, or ice time, highlight that underlying offensive generation and opportunity were extremely important predictors for a player’s future. The features that highlighted underlying play were influential predictors. Interestingly, a player’s amount of goals, one of the few features that showed a player’s current production, was not one of the top 10 features based on importance, showing the hypothesis that the underlying metrics mattered more was likely correct.</p>
+</section>
+<section id="understanding-the-probabilities" class="level3">
+<h3 class="anchored" data-anchor-id="understanding-the-probabilities">Understanding the Probabilities</h3>
+<p>By nature of the model, probabilities are produced rather than binary classifications. There is no threshold of probability that makes a player certain to breakout, but the higher the probability, the more sure we can be that a player might break out if given the opportunity.</p>
+<div id="fig-jitter" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-jitter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/predvsactual.png" id="fig-jitter" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-jitter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8
+</figcaption>
+</figure>
+</div>
+<div id="fig-probbyrate" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-probbyrate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/breakoutbyprob.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-probbyrate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9: Breakout rate by predicted probability.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-jitter" class="quarto-xref">Figure&nbsp;8</a> plots the predicted probability against the actual outcomes. While the breakout and non-breakout players are not perfectly separated, indicating no clear threshold for a classification, a clear trend emerges. The players that were assigned high probabilities broke out much more than the players assigned a low probability. This relationship demonstrates that the model indeed captures information about a players future development.</p>
+<p><a href="#fig-probbyrate" class="quarto-xref">Figure&nbsp;9</a> plots the predicted probability against the true breakout rate. Generally, the graph shows that higher probabilities correspond to a higher breakout rate, notably this relationship starts around a predicted prbability of &gt;0.2. While there are some expected deviations, this shows that the model is well calibrated and increasing the predicted probability translates into a meaningful increase in actual likelihood of a breakout.</p>
+</section>
+<section id="distribution-of-breakout-probabilities" class="level3">
+<h3 class="anchored" data-anchor-id="distribution-of-breakout-probabilities">Distribution of Breakout Probabilities</h3>
+<p>The distribution of the predicted breakout probabilities can provide more context to the model’s outputs. The following figures illustrate the density and cumulative distribution function of the breakout probabilities.</p>
+<div id="fig-density" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/dist.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10: Density of the predicted probabilities.
+</figcaption>
+</figure>
+</div>
+<div id="fig-cdf" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cdf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/cdf.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cdf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11: Cumulative Distribution of the predicted probabilities.
+</figcaption>
+</figure>
+</div>
+<p>A majority of player-seasons receive a low probability to break out, reflecting the reality that a breakout season is highly uncommon among every single forward in the NHL. Only a small fraction of players achieve a probability above that of the league average.</p>
+<p>This skewed distribution reinforces the importance of ranking the players instead of creating a classification threshold. A probability that appears small in isolation can still represent a strong potential to break out given the extremely low density of higher scores.</p>
+</section>
+<section id="ranking-breakout-candidates" class="level3">
+<h3 class="anchored" data-anchor-id="ranking-breakout-candidates">Ranking Breakout Candidates</h3>
+<p>The following figure illustrates the ranking process of the model.</p>
+<div id="fig-ranked" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ranked-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/ranked.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ranked-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12: Ranked probabilities.
+</figcaption>
+</figure>
+</div>
+<p>As shown, a small number of players receive the higher probability than the rest of the league, identifying them as a natural set of players that should be investigated for their breakout probability. This framework allows analysis to focus on the most promising players.</p>
+<p>To better understand this method of analysis and the model’s patterns, several case studies from the testing dataset are examined in the following section.</p>
+</section>
+</section>
+<section id="case-studies" class="level2">
+<h2 class="anchored" data-anchor-id="case-studies">Case Studies</h2>
+<p>To show how the model behaves in practice, six players were selected as case studies. Two of the players represent success stories where the model correctly identified the player as a top-K breakout candidate, and they indeed broke out. The remaining four case studies represent different stories where the model went wrong, whether it be because the model predicted a breakout a season too early, the player failed to live up to the breakout hype, the model outright missed a player, or an interesting case where the player broke out under the model’s radar, but immediately regressed back to where they were before. All together, these examples provide insight into both the successes and limitations of the model.</p>
+<section id="wyatt-johnston" class="level3">
+<h3 class="anchored" data-anchor-id="wyatt-johnston">Wyatt Johnston</h3>
+<p>Wyatt Johnston as a rookie had all the boxes checked to be a future superstar. He was a first round draft pick, taken by the Dallas Stars with the 23rd pick in the 2021 Draft. He came with high scoring upside, and the coaching staff in Dallas, one of the best teams in the league, was able to harness it nearly immediately, granting Johnston a top-6 role in his first season with experienced linemates in Jamie Benn and Evgeni Dadonov. He shined with 24 goals and 41 points, but the model saw more in him.</p>
+<p>Each player of the six case studies as well as every predicted player for next season had a probability card made of them. <a href="#fig-johnstoncard" class="quarto-xref">Figure&nbsp;13</a> is Wyatt Johnston’s.</p>
+<div id="fig-johnstoncard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-johnstoncard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/johnstoncard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-johnstoncard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13: Wyatt Johnston’s probability card.
+</figcaption>
+</figure>
+</div>
+<p>The model put high faith in him, listing Johnston with a 31.7% chance of breakout, the best of any player-season in the testing dataset. Johnston immediately delivered, upping his goals and points production with increased icetime and better positioned himself for goals, raising his underlying metrics even higher. He established himself as one of the league’s top young forwards, but his climb did not stop there.</p>
+<div id="fig-johnstontraj" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-johnstontraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/johnstontrajectory.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-johnstontraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14: Wyatt Johnston’s career trajectory.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-johnstontraj" class="quarto-xref">Figure&nbsp;14</a> shows Johnston’s career trajectory in terms of points and expected goals. Johnston stayed relatively stagnant the year following his breakout, but last season he cemented himself as a true first line center and superstar, notching his first 40 goal season with 45 tallies and 86 points, while his underlying metrics just got better and better.</p>
+<p>With Wyatt Johnston being such an obvious breakout candidate, it’s worth looking into what exactly the model saw in him that was different from everyone else. <a href="#fig-johnstoncomp" class="quarto-xref">Figure&nbsp;15</a> explores this comparison.</p>
+<div id="fig-johnstoncomp" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-johnstoncomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/johnstoncomp.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-johnstoncomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15: Wyatt Johnston compared to the league as a whole.
+</figcaption>
+</figure>
+</div>
+<p>Johnston was above average in every single one of these four stats, which is made even more impressive considering he was just a rookie. The ice time gave him opportunity to shine, which he made the most of with good positioning for solid xG and High Danger xG (HDxG) metrics, and his Corsi% was solid as well.</p>
+<div id="fig-johnstonhdxg" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-johnstonhdxg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/johnstonhdxg.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-johnstonhdxg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;16: Wyatt Johnston compared to the league in HDxG.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-johnstonhdxg" class="quarto-xref">Figure&nbsp;16</a> shows Johnston’s HDxG compared to the league. HDxG is an interesting indicator stat because of its uniqueness in telling two stories at the same time: every shot in the league has both a probability to go in the net and become a goal, which contributes to your expected goals, as well as a danger level assigned because of its distance to the net and nature of the play leading to the shot. All high danger shots have an probabillity above .20 of resulting in a goal. HDxG quantifies two things: your shooting ability and your positioning. By having an above average HDxG, you’re displaying an ability to position yourself in good places to get high danger shots off as well as being a good enough shooter to convert those shots into goals.</p>
+<p>As a rookie, Johnston found himself in an excellent position compared to the league in HDxG, contributing to why the model found him so promising to take a step forward.</p>
+<p>Overall, Johnston’s story shows us the perfect ideal the model is looking for: a player who is already very strong in advanced metrics, but either not matching their points total to their metrics, or who has room to grow metrics wise.</p>
+</section>
+<section id="pavel-zacha" class="level3">
+<h3 class="anchored" data-anchor-id="pavel-zacha">Pavel Zacha</h3>
+<p>In contrast to the writing-on-the-wall breakout of Wyatt Johnston, the story of Pavel Zacha is a bit more interesting. Pavel Zacha, a former 6th overall pick in 2015, was a player who just couldn’t seem to get over the 35 point hump. From 2019-2020 to 2021-22, Zacha could not play the full year, resulting in 32, 35, and 36 points, respectively, granted two of those seasons were shortened due to COVID. It appeared that might be his ceiling, a .5 PPG player who couldn’t stay fully healthy for an entire year.</p>
+<p>The Devils shipped him off to Boston for Erik Haula, a move that would make them money to attempt to make a big splash in free agency. While the Devils gave up on his upside, the model did not.</p>
+<div id="fig-zachacard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zachacard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/zachacard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zachacard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17: Pavel Zacha’s probability card.
+</figcaption>
+</figure>
+</div>
+<p>It gave Zacha a 20.3% chance to break out, which was really high for all player-seasons in the testing set. It believed that his production would eventually match his process, notably seeing that Zacha’s xG was higher than his actual goal count.</p>
+<p>A change of scenery proved to be the best thing for Zacha. He played the first full season in his career, and despite losing almost a minute on average ice time, his production rose.</p>
+<div id="fig-zachatraj" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zachatraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/zachtrajectory.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zachatraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18: Pavel Zacha’s career trajectory.
+</figcaption>
+</figure>
+</div>
+<p>Since joining the Bruins, as we can see in <a href="#fig-zachatraj" class="quarto-xref">Figure&nbsp;18</a>, Pavel Zacha’s points total has never dipped below 47, with that being a down year, as he’s been able to stay around 60 points in the other three years. He’s grown into an incredibly productive top six forward, with that first breakout year being the catalyst.</p>
+<div id="fig-zachapct" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zachapct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/zachapct.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zachapct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19: Pavel Zacha’s statistical outlook in percentiles.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-zachapct" class="quarto-xref">Figure&nbsp;19</a> shows Zacha’s percentiles through his career in the relevant stats. In the season before his 22-23 breakout, his underlying metrics all took a massive leap towards around 75th percentile, but his points stayed put at the 65th-70th percentile it was at the season prior. This underlying increase shows an indicator for breakout: when the player’s production is below their underlying process, there is room for them to break out.</p>
+<p>In Zacha’s case this happened instantly. His point production the following season rose back up above his production, which admittedly took a tiny dip, and he broke out.</p>
+<div id="fig-zachacomp" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zachacomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/zachacomp.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zachacomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20: Pavel Zacha compared to the league.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-zachacomp" class="quarto-xref">Figure&nbsp;20</a> cements Zacha’s incredible process the season prior to his breakout. He was well above average in each of the three underlying stats, and got decent icetime, but his production just wasn’t there. The change of scenery that came with being traded and the jump his points made to catch up to his process led to Zacha’s breakout to stardom.</p>
+</section>
+<section id="zach-benson" class="level3">
+<h3 class="anchored" data-anchor-id="zach-benson">Zach Benson</h3>
+<p>While the previous two case studies showed how the model can get it right, the next stories show some interesting stories where the model was not 100% on the mark. Firstly, let’s analyze Zach Benson.</p>
+<p>Benson was the 13th overall pick in the 2023 Draft, a highly touted prospect who really only lacked in size. His first season was okay, notching 11 goals and a respectable 30 points in 71 games, flashing potential along the way for a Sabres team that was floundering. The models believed in rookie year Benson to break out, noting his xG being higher than his goal count and the fact that he was well above average in every metric as just a rookie. His probability card is seen below in <a href="#fig-bensoncard1" class="quarto-xref">Figure&nbsp;21</a>.</p>
+<div id="fig-bensoncard1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bensoncard1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/bensonROOKIEcard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bensoncard1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;21: Zach Benson’s probability card following his rookie season.
+</figcaption>
+</figure>
+</div>
+<p>However, Benson did not break out in his 2nd season. He got better as a play driver, raising his Corsi% while shooting slightly worse from high danger situations. It was all in all a disappointing second year, but the model reaffirmed its faith in him, giving him a much stronger 26.7% chance to break out, as can be seen in <a href="#fig-bensoncard2" class="quarto-xref">Figure&nbsp;22</a>. And, for what its worth, Benson did break out!</p>
+<div id="fig-bensoncard2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bensoncard2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/bensonBREAKOUTcard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bensoncard2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22: Zach Benson’s probability card following his 2nd season.
+</figcaption>
+</figure>
+</div>
+<p>While Benson still was lacking the goal-scoring touch that the xG would indicate, he was able to increase his point production considerably in his 3rd season, earning him a monster extension that could prove incredible for his Sabres if he pans out even more.</p>
+<p>This raises an important consideration, though, about the model. It gave Benson a decent chance to break out, he didn’t, and then it chose him again. It’s definitely worth looking into what the model saw in Benson and see why the model would be early on a player.</p>
+<div id="fig-bensontraj" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bensontraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/bensontraj.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bensontraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;23: Zach Benson’s career trajectory.
+</figcaption>
+</figure>
+</div>
+<p>The first interesting development regarding Zach Benson comes from his xG. His xG has remained relatively constant through his 3 years in the NHL, and in all three seasons his goal count was considerably less than his xG. This is relatively uncommon with stars, who usually overperform their metrics a little bit, so it makes sense why the model trusted him. The fact that he still has untapped scoring potential shows the increases Benson may still make in the future. It would not be shocking in the slightest if Benson has a Wyatt Johnston level breakout, going from mid-40s to mid-60s in points, with a jump in goal production.</p>
+<div id="fig-bensonpct" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bensonpct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/bensonpct.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bensonpct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24: Zach Benson’s career percentiles.
+</figcaption>
+</figure>
+</div>
+<p>The percentiles still show this room for improvement, as well as why the model loves him. He’s consistently been a 75th or better percentile player in xG and HDxG, and his Corsi% fluctuates between there as well. His points production finally this season began to catch up to the rest, but there’s certainly still room to improve for the 21 year old.</p>
+<div id="fig-bensongap" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-bensongap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/bensongraph.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bensongap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;25: Zach Benson’s production finally caught his process.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-bensongap" class="quarto-xref">Figure&nbsp;25</a> shows the production increase quite plainly. It can be useful to see the xG percentile and points percentile together, but this graph directly shows them in contrast. It took until his 3rd NHL season to do it, but his points production finally matched his xG boom. Again, in context, it’s even more interesting knowing that this production increase did not occur because of Benson scoring more goals.</p>
+<p>Benson provides an interesting insight into the model. It takes lots of stock into your underlying production being better than your on ice production, so it makes sense that it loves Zach Benson. His delayed breakout further reaffirms this point, because he did not lose his underlying metrics in his rough sophomore season, rather, he just couldn’t find the production to match. The model still believed in him, though, and he came through.</p>
+</section>
+<section id="connor-zary" class="level3">
+<h3 class="anchored" data-anchor-id="connor-zary">Connor Zary</h3>
+<p>Connor Zary is one of the more interesting cases in this project. He’s one of the model’s biggest misses, a false positive. Another former first rounder, Zary came into the league with a lot of potential surrounding him. He got to play for a Calgary team that was going through a bit of a retool, trying to find its footing, and Zary’s rookie season was promising, notching 14 goals and 34 points through 63 games. His following season, much like Zach Benson, was not an improvement, but the model believed in him to break through, much like Benson did.</p>
+<div id="fig-zarycard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zarycard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/zarycard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zarycard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26: Connor Zary’s probability card.
+</figcaption>
+</figure>
+</div>
+<p>Unlike Benson, that did not happen. He had by far his worst season yet in 25-26, playing the most games but scoring the least amount of points. While he may still break out next season, especially with the buzz that may come with him being traded away from a bad situation in Calgary (as of 6/25, he has not been traded), it’s worth noting how the model got here. A pretty big swing and a miss.</p>
+<div id="fig-zaryleague" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zaryleague-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/zaryvleague.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zaryleague-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;27: Connor Zary vs.&nbsp;the NHL.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-zaryleague" class="quarto-xref">Figure&nbsp;27</a> shows why the model believed in him. Compared to Zacha and Johnston, two correct breakout picks, Zary looks pretty comparable. He lagged slightly behind in xG, but notched the same Corsi% as Pavel Zacha and a very similar HDxG as the two. The icetime difference can be explained away by Zary only playing 54 games that season, too. All signs seemed to point towards a Connor Zary breakout, but it didn’t come.</p>
+<div id="fig-zaryjohnston" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zaryjohnston-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/zaryjohnstoncomp.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zaryjohnston-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28: Connor Zary vs.&nbsp;Wyatt Johnston.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-zaryjohnston" class="quarto-xref">Figure&nbsp;28</a> shows a more in depth comparison between Zary and Johnston in the three underlying stats. We see that Zary is much better at producing shots, while Johnston is better at producing high quality shots. This graph shows us that Zary and Johnston are both similar players, both with high upside, only Johnston has found it while Zary has not.</p>
+<div id="fig-zarypct" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-zarypct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/zarypct.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zarypct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;29: Connor Zary’s league percentiles.
+</figcaption>
+</figure>
+</div>
+<p>It may be that Zary’s case is like Zach Benson’s, except Zary’s breakout is going to take even longer, if it ever comes. We see in <a href="#fig-zarypct" class="quarto-xref">Figure&nbsp;29</a> that Zary’s metrics did not go down, aside from his Corsi%, last season, but that his points are still below his metrics.</p>
+<p>Whether or not Zary will be able to eventually break out remains to be seen, and the model still has some faith in him, as he is still in the top 20 to break out for next season. It may be that his story is like Zach Benson’s, except with an even more delayed breakout. Either way, this story shows that the model, while solid at predicting breakouts, can still have a miss.</p>
+</section>
+<section id="will-cuylle" class="level3">
+<h3 class="anchored" data-anchor-id="will-cuylle">Will Cuylle</h3>
+<p>Will Cuylle is another interesting miss for the model. Unlike the other players that have been examined so far, Cuylle flew under the radar of the model, and actually broke out.</p>
+<div id="fig-cuyllecard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cuyllecard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/cuyllecard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cuyllecard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30: Will Cuylle’s probability card.
+</figcaption>
+</figure>
+</div>
+<p>His probability card hints at an interesting underlying story. Unlike the other players we’ve looked at, Cuylle’s xG metrics both nearly doubled from one season to the next. This doesn’t indicate that he broke out because his production reached his process, this indicates that he simply became a better player in the course of the season, which is something the model is unable to account for.</p>
+<div id="fig-cuylletraj" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cuylletraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/cuylletraj.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cuylletraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;31: Will Cuylle’s career trajectory
+</figcaption>
+</figure>
+</div>
+<p>Cuylle’s trajectory shares the same story. Unlike Pavel Zacha who improved before he broke out, Will Cuylle improved his xG and his points the same season. This jump doubled his points total and nearly doubled his xG. A look at his percentile ranks in the figure below helps quantify this further.</p>
+<div id="fig-cuyllepct" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cuyllepct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/cuyllepct.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cuyllepct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32: Will Cuylle’s league percentiles.
+</figcaption>
+</figure>
+</div>
+<p>Will Cuylle had an incredible improvement from his first full season to his 2nd, and was able stay consistently there in his third. It raises the question of how the model missed this underlying potential, and how it flew under the rug of everyone. An interesting hint was given in making the probability card, seeing that Cuylle’s icetime dramatically increased, and thus, the next figure was engineered to explore this.</p>
+<div id="fig-cuyllepuck" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-cuyllepuck-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/cuyllepuckluck.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cuyllepuck-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;33: Will Cuylle found more opportunities.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-cuyllepuck" class="quarto-xref">Figure&nbsp;33</a> shows a large reason for Will Cuylle’s breakout. His icetime dramatically improved, ranking him in the top 600 as opposed to around 800th in the NHL in ice time. This aligned with a development in his shooting that raised his Shooting %, which led to increased production.</p>
+<p>This insight highlights a flaw with the model that could be fixed in the future. Because the model cannot account for an increase in ice time, players like Will Cuylle could fly under the radar and become stars right under the nose of the model. It is difficult to predict future opportunities just on previous statistics alone, however, so this is a reasonable failure of the model, but still an interesting one.</p>
+</section>
+<section id="eetu-luostarinen" class="level3">
+<h3 class="anchored" data-anchor-id="eetu-luostarinen">Eetu Luostarinen</h3>
+<p>Eetu Luostarinen, at first glance to his probability card below, looks to be a similar story to Will Cuylle. A player who seemingly out of nowhere increased his production and became a star, but there is more than meets the eye with Eetu Luostarinen.</p>
+<div id="fig-luocard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-luocard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/luostarinencard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-luocard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;34: Eetu Luostarinen’s probability card.
+</figcaption>
+</figure>
+</div>
+<p>Any Panthers fan could tell you that Luostarinen has not hit that points total ever since that 22-23 breakout season, and hasn’t even really been close except for this past season.</p>
+<div id="fig-luopct" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-luopct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/luopct.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-luopct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;35: Eetu Luostarinen’s league percentiles.
+</figcaption>
+</figure>
+</div>
+<p>As shown in <a href="#fig-luopct" class="quarto-xref">Figure&nbsp;35</a>, Eetu Luostarinen made a dramatic improvement in 2022, but he’s completely lacked consistency since. His Corsi% has fluctuated, as well as his xG and HDxG and his points fell flat for a couple of seasons before climbing back to meet the expected goals metrics again this past season. This raises an important question: why did Eetu Luostarinen break out, and why couldn’t he maintain that production?</p>
+<div id="fig-luotraj" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-luotraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/luotraj.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-luotraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;36: Eetu Luostarinen’s career trajectory.
+</figcaption>
+</figure>
+</div>
+<p>A look at his career trajectory reaffirms the question. His xG indeed went down a couple of seasons following his breakout season, and he hasn’t been able to find the same form as his 22-23 season. A quick look at his icetime totals show that his ice time did not go down on the stacked Florida squad either, his icetime has consistently averaged around 15-16 minutes a night since that breakout season in 22-23.</p>
+<div id="fig-luoshot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-luoshot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/luoshot.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-luoshot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;37: The reason behind Luostarinen’s breakout.
+</figcaption>
+</figure>
+</div>
+<p>Further investigation, as shown by <a href="#fig-luoshot" class="quarto-xref">Figure&nbsp;37</a>, shows that the answer to what fueled Luostarinen’s breakout was right in front of his profile the entire time. In his breakout 2022 season, Luostarinen peaked his shooting percentage at nearly 13%, a figure that has not been reached before or since. This explains why he scored a career high 17 goals and hasn’t touched 12 since. It also explains another unexplainable phenomenon for the model: career highs are natural progressions of a player’s development, but the model in its current state is unable to predict them happening and explain production away in that way.</p>
+<p>However, since Eetu Luostarinen has not reached the heights of his breakout season, it can be argued that while the model missed his breakout, it still bucketed him correctly by not giving him a serious chance to break out, it recognized him not as a future star, but as a more average production player, which has been what he has reached in the seasons since.</p>
+</section>
+<section id="lessons-learned" class="level3">
+<h3 class="anchored" data-anchor-id="lessons-learned">Lessons Learned</h3>
+<p>Through looking at six case studies, several themes and patterns have emerged. It can be seen that successful model predictions of a breakout are often characterized with players who had strong internal play-driving metrics such as xG or Corsi%, but lacked the production to match it. Indicators of this included an xG being higher than the goal count, or just otherwise strong xG, HDxG, and Corsi%.</p>
+<p>Missed breakouts were frequently characterized with factors that were more difficult for the model to quantify: changes in ice time, shooting luck, or the passage of time making a player better. Usually, in these misses, higher than normal shooting percentages or deployment were seen compared to the players career averages.</p>
+<p>Taken together, these findings suggest that the model is typically effective at identifying suitable breakout profiles while remaining vulnerable to opportunity changes and unusually favorable situations.</p>
+<p>After looking at some case studies, the model is now ready to be applied to the current season and ready to produce a list of potential breakout candidates for the 2026-27 NHL season.</p>
+</section>
+</section>
+<section id="predictions" class="level2">
+<h2 class="anchored" data-anchor-id="predictions">2026-27 Predictions</h2>
+<p>Now that the model has been calibrated with the historical data and they can now be applied to the 2025-26 season to produce breakout candidates for next season, 26-27. The two models have complimentary perspectives, the precision model being more focused on confidence in breakouts, and the coverage model being more focused on identifying a broad pool of breakout candidates.</p>
+<section id="precision-model-rankings" class="level3">
+<h3 class="anchored" data-anchor-id="precision-model-rankings">Precision Model Rankings</h3>
+<p>Note, for the following table has some players, such as Matvei Michkov, removed. This is because, for some reason, a small number of players slipped through the cracks despite not being eligible to break out.</p>
+<table class="caption-top table">
+<caption>Table 2: XGBoost v4 Precision Model Top 20 Breakout Candidates for 26-27</caption>
+<thead>
+<tr class="header">
+<th>Rank</th>
+<th>Player</th>
+<th>Probability</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Emil Heineman</td>
+<td>23.0%</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Ben Kindel</td>
+<td>21.9%</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Mackie Samoskevich</td>
+<td>20.8%</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Emmitt Finnie</td>
+<td>20.2%</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Morgan Frost</td>
+<td>20.0%</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Ryan Leonard</td>
+<td>19.0%</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Cole Perfetti</td>
+<td>18.2%</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>Matt Coronato</td>
+<td>17.8%</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>Zachary Bolduc</td>
+<td>17.6%</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>Logan Stankoven</td>
+<td>17.0%</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>Mason McTavish</td>
+<td>16.8%</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td>Alex Laferriere</td>
+<td>16.6%</td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td>Braeden Bowman</td>
+<td>16.4%</td>
+</tr>
+<tr class="even">
+<td>14</td>
+<td>Vasily Podkolzin</td>
+<td>15.8%</td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td>Matthew Wood</td>
+<td>15.7%</td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td>Egor Chinakhov</td>
+<td>14.8%</td>
+</tr>
+<tr class="odd">
+<td>17</td>
+<td>Josh Doan</td>
+<td>14.8%</td>
+</tr>
+<tr class="even">
+<td>18</td>
+<td>Calum Ritchie</td>
+<td>14.7%</td>
+</tr>
+<tr class="odd">
+<td>19</td>
+<td>Dmitri Voronkov</td>
+<td>14.5%</td>
+</tr>
+<tr class="even">
+<td>20</td>
+<td>Arseny Gritsyuk</td>
+<td>14.0%</td>
+</tr>
+</tbody>
+</table>
+<p>From Table 2, several interesting developments can be seen. Firstly, nearly every player in the top 20 is a young forward with not much NHL experience. Some, like Ben Kindel, are coming off of their rookie season. Others have a similar outlook to a player like Wyatt Johnston in terms of production level, such as Alex Laferierre or Morgan Frost. These players have already had decent production levels, but the model still thinks they can go even further.</p>
+<p>Another interesting observation is that compared to some of the case studies, the probability of breakouts in this model’s predictions are relatively low. This may simply be because the model does not believe in this season’s players as much as previous seasons, for whatever reason.</p>
+</section>
+<section id="breakout-candidates-from-the-rankings" class="level3">
+<h3 class="anchored" data-anchor-id="breakout-candidates-from-the-rankings">Breakout Candidates From the Rankings</h3>
+<p>From Table 2, I identified five players I believe are worth looking into and picking them to potentially break out this upcoming season. Note, this does not guarantee they will break out, but that they have the profiles that closely match previous breakout candidates and put them in a good spot, in my opinion, to have an increase in production next season.</p>
+<section id="emil-heineman" class="level4">
+<h4 class="anchored" data-anchor-id="emil-heineman">Emil Heineman</h4>
+<p>The first player that is one to watch to potentially break out is Emil Heineman. With the highest probability of anyone in the precision model, as shown in <a href="#fig-heinemancard" class="quarto-xref">Figure&nbsp;38</a>, Heineman’s first season with the Islanders was a productive one. He was a 20 goal scorer and productive middle sixer for a playoff hopeful Isles team, but he lacked the point production to really put him on the map as a rising star.</p>
+<div id="fig-heinemancard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-heinemancard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/heinemancard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-heinemancard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;38: Emil Heineman’s probability card
+</figcaption>
+</figure>
+</div>
+<p>Heineman’s high goal production but small points production is very reminiscent of division rival Blue Jackets’ star Kirill Marchenko’s rookie season. Marchenko in 22-23 notched 21 goals and just 4 assists. But, the comparison doesn’t just stop at goals and points.</p>
+<div id="fig-heinemancomp" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-heinemancomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/heinemancomp.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-heinemancomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;39: Heineman vs.&nbsp;Marchenko comparison.
+</figcaption>
+</figure>
+</div>
+<p>As seen in <a href="#fig-heinemancomp" class="quarto-xref">Figure&nbsp;39</a>, Kirill Marchenko in 2022-23 and Emil Heineman in 25-26 were remarkably similar players who functioned in very similar ways. They both relied on their raw goal-scoring ability more than playmaking, and it led to them looking nearly identical in goals, xG, HDxG, and Corsi%.</p>
+<p>Marchenko did not immediately break out in his second NHL season, at least by the parameters set in this project, but he came extremely close, and his following seasons cemented him as a star. His assist production increased dramatically, leading towards his so-far career year of 31 goals and 74 points in the 24-25 season.</p>
+<p>Emil Heineman may position himself down a similar career path. If he can continue his scoring pace while implementing playmaking to his skill set, a massive increase in points production is highly achievable. Although no players have the same exact development, the striking similarity between Heineman and Marchenko provides a compelling example of why the model believes in Heineman’s future.</p>
+</section>
+<section id="mackie-samoskevich" class="level4">
+<h4 class="anchored" data-anchor-id="mackie-samoskevich">Mackie Samoskevich</h4>
+<p>For a while up until his debut in 2023-24, Mackie Samoskevich had been one of the few prospects on a loaded with talent Panthers team. He became a regular player the following season, helping the team in any way he could, and he showed flashes of his brilliance, with 15 goals and 31 points. He remained a bright spot with flashes in the following 25-26 season, losing some of the scoring touch but maintaining the point total.</p>
+<div id="fig-mackiecard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mackiecard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/samoskevichcard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mackiecard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;40: Mackie Samoskevich’s probability card.
+</figcaption>
+</figure>
+</div>
+<p>As seen in <a href="#fig-mackiecard" class="quarto-xref">Figure&nbsp;40</a>, the model is absolutely in love with Samoskevich. His Corsi% is top 5 percent of the entire league, and his xG is much more than his actual goal count. His percentiles are incredible, showing a player in the upper echelon of play, but the points still leave something to be desired.</p>
+<p>The figure below shows his xG compared to his points throughout his career, showing the meaningful improvement he made from his first full season to his second, but that hasn’t been matched with an increased production level.</p>
+<div id="fig-mackievis" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mackievis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/samoskevichvis.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mackievis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;41: Mackie Samoskevich’s career trajectory.
+</figcaption>
+</figure>
+</div>
+<p>It is obvious there is tons of room to grow for Mackie Samoskevich, the question has always been when. This season might be the answer, as he has been dealt to a more favorable playing-time situation in Seattle. He will get the minutes should he stay healthy, while losing maybe a bit of quality of his linemates. Expect Mackie Samoskevich to feature in the Kraken’s top 6, and maybe he will increase his production to a star-level.</p>
+</section>
+<section id="ben-kindel" class="level4">
+<h4 class="anchored" data-anchor-id="ben-kindel">Ben Kindel</h4>
+<p>Another potential slam-dunk pick for a breakout in 26-27 is Penguins young forward Ben Kindel. Kindel, drafted 11th in 2025, exploded on to the scene with a stellar rookie season. His statline is below in <a href="#fig-kindelcard" class="quarto-xref">Figure&nbsp;42</a>.</p>
+<div id="fig-kindelcard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-kindelcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/kindelcard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-kindelcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;42: Ben Kindel’s probability card.
+</figcaption>
+</figure>
+</div>
+<p>Like Mackie Samoskevich before him, he isn’t outscoring his production, which builds an easy path to improvement: just simply match your production level. But, like Wyatt Johnston before him, he shows a flash of what could turn him not just into a star, but into a full out superstar for the Penguins team that desperately needs a young star.</p>
+<div id="fig-kindelvis" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-kindelvis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/kindelvis.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-kindelvis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;43: Ben Kindel’s percentiles on important variables
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-kindelvis" class="quarto-xref">Figure&nbsp;43</a> above shows Ben Kindel’s performance on some of the variables the model considered important. Some of these variables were already shown on his probability card, but its worth noting his solid but not extraordinary performance in both PPG and O-Zone Shift%. PPG makes sense, as if it was higher, he’d have no room to break out, but his middle of the road performance in being deployed in the offensive zone shows an easy path to improvement: increased opportunity.</p>
+<p>If Ben Kindel was given more opportunity, naturally his goal scoring touch would flourish even more than it already has, and he could build even further off the impressive rookie season, and develop into a star. Expect Ben Kindel to find improvement in the near future, potentially seeing a 60+ point season from him soon.</p>
+</section>
+<section id="logan-stankoven" class="level4">
+<h4 class="anchored" data-anchor-id="logan-stankoven">Logan Stankoven</h4>
+<p>Logan Stankoven exploded onto the scene as a Stars prospect, showing incredible promise that led to his involvement in the Mikko Rantanen trade, turning Stankoven into a young threat for the Hurricanes. In his first full season in Carolina, he’s put up solid numbers, and helped pave the way for their run all the way to glory in the postseason as a massive contributing factor. But, despite his promise and his skill, his career high points total from this season was just 44 points. The model thinks he can do better.</p>
+<div id="fig-stankcard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stankcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/stankovencard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stankcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;44: Logan Stankoven’s probability card.
+</figcaption>
+</figure>
+</div>
+<p>It gives him one of the highest chances of breakout of anyone in the NHL right now, and it’s easy to see why. He is in a rare club of goal scorers whose xG is higher than their goals, and his Corsi% is incredible, and as much of that credit has to be given to his play driving ability as it does the quality of his team and his linemates. <a href="#fig-stankpct" class="quarto-xref">Figure&nbsp;45</a> below shows the same percentiles from the card.</p>
+<div id="fig-stankpct" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-stankpct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/stankovenpct.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stankpct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;45: Logan Stankoven’s incredible profile compared to the league.
+</figcaption>
+</figure>
+</div>
+<p>Simply put, this profile is incredible. Stankoven is a top 10% NHLer in three incredibly important underlying metrics, but his point production has not reached that of a superstar quite yet. It makes perfect sense for Stankoven’s next season to be one where he puts himself further on the map, fueled by the incredible cup run and his incredible play.</p>
+</section>
+<section id="matthew-wood" class="level4">
+<h4 class="anchored" data-anchor-id="matthew-wood">Matthew Wood</h4>
+<p>The final breakout candidate I’ve chosen to highlight from the top 20 of the precision model is Matthew Wood. Like some of the players before him, Wood is a former first round prospect turned young promising forward for a team that will kindly appreciate his production.</p>
+<div id="fig-woodcard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-woodcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/woodcard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-woodcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;46: Matthew Wood’s probability card.
+</figcaption>
+</figure>
+</div>
+<p>Unlike some of his peers, however, Matthew Wood does not really pop out as extraordinary. He’s plainly above average in every statistic, which provides a different avenue for him to break out and improve: opportunity.</p>
+<div id="fig-woodvis" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-woodvis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/woodvis.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-woodvis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;47: Matthew Wood compared to the league.
+</figcaption>
+</figure>
+</div>
+<p><a href="#fig-woodvis" class="quarto-xref">Figure&nbsp;47</a> highlights this issue. Matthew Wood is above average in Corsi%, xG, and HDxg, but he is severely lacking in the icetime statistic that could otherwise provide him with the opportunity to be a star. If the Predators deploy him more, give him the 15+ minutes of ice time we saw from other breakout candidates, it would not be a shock at all if Matthew Wood finds himself as a young breakout.</p>
+</section>
+</section>
+<section id="coverage-model-rankings" class="level3">
+<h3 class="anchored" data-anchor-id="coverage-model-rankings">Coverage Model Rankings</h3>
+<table class="caption-top table">
+<caption>Table 3: XGBoost v4 Coverage Model Top 20 Breakout Candidates 26-27</caption>
+<thead>
+<tr class="header">
+<th>Rank</th>
+<th>Player</th>
+<th>Probability</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>Mason McTavish</td>
+<td>30.5%</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>Morgan Frost</td>
+<td>27.0%</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>Cole Perfetti</td>
+<td>23.6%</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>Ben Kindel</td>
+<td>23.3%</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>Logan Stankoven</td>
+<td>23.1%</td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>Ryan Leonard</td>
+<td>21.6%</td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>Bobby Brink</td>
+<td>20.3%</td>
+</tr>
+<tr class="even">
+<td>8</td>
+<td>Emmitt Finnie</td>
+<td>20.2%</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>Tommy Novak</td>
+<td>17.6%</td>
+</tr>
+<tr class="even">
+<td>10</td>
+<td>Zachary Bolduc</td>
+<td>17.1%</td>
+</tr>
+<tr class="odd">
+<td>11</td>
+<td>Dawson Mercer</td>
+<td>16.9%</td>
+</tr>
+<tr class="even">
+<td>12</td>
+<td>Jake Debrusk</td>
+<td>16.4%</td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td>Jack Roslovic</td>
+<td>15.0%</td>
+</tr>
+<tr class="even">
+<td>14</td>
+<td>Egor Chinakhov</td>
+<td>14.7%</td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td>Calum Ritchie</td>
+<td>14.4%</td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td>Braeden Bowman</td>
+<td>14.2%</td>
+</tr>
+<tr class="odd">
+<td>17</td>
+<td>Simon Holmstrom</td>
+<td>14.0%</td>
+</tr>
+<tr class="even">
+<td>18</td>
+<td>Connor Zary</td>
+<td>13.8%</td>
+</tr>
+<tr class="odd">
+<td>19</td>
+<td>Dmitri Voronkov</td>
+<td>13.7%</td>
+</tr>
+<tr class="even">
+<td>20</td>
+<td>Matthew Wood</td>
+<td>13.6%</td>
+</tr>
+</tbody>
+</table>
+<p>Table 3 above can show us some interesting insights into how the Coverage model operates on a season to season basis. The probabilities are much higher, more like the probabilities from the case studies, but they did taper off and meet with the precision probabilities relatively quickly. A few notable insights: the coverage model included far more players that could be classified as “older” (Jake Debrusk, Jack Roslovic, Tommy Novak) to break out, which could be interpreted as just the model predicting a career year. Similarly, players like Dmitri Voronkov feature on both models, and a breakout threshold for him might just be returning to his form before this season. Another interesting insight is that the precision and coverage models shared more players than they had in the testing dataset in the top 20, perhaps an indicator of how this season’s breakout candidates are.</p>
+</section>
+<section id="out-there-breakout-candidates" class="level3">
+<h3 class="anchored" data-anchor-id="out-there-breakout-candidates">Out There Breakout Candidates</h3>
+<p>From the coverage model, I have identified 3 players that were not in the top 20 of either model, but I believe have the profile that could see them break out in 26-27.</p>
+<section id="dalibor-dvorsky" class="level4">
+<h4 class="anchored" data-anchor-id="dalibor-dvorsky">Dalibor Dvorsky</h4>
+<p>Dalibor Dvorsky could be a sneaky breakout in the 26-27 season. Currently set to be the third line center on a Blues team that just added Mason McTavish, Dvorsky showed a bit of upside in his rookie season, finding the back of the net 12 times and boasting a decent underlying profile.</p>
+<div id="fig-dvorskycard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dvorskycard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/dvorskycard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dvorskycard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;48: Dalibor Dvorsky’s probability card.
+</figcaption>
+</figure>
+</div>
+<p>The main reason I believe Dvorsky could find improvement in his second season is because of the upcoming opportunity that will be granted to him. The offseason is still young, but it seems now like the Blues are making meaningful improvements to their top 9. They’ve turned their draft capital and Jordan Kyrou into Mason McTavish and Connor McMichael, and there’s a relatively high likelihood they aren’t done there. With better linemates, and another year in the NHL under his belt, watch out for Dalibor Dvorsky to have a sneaky 20 goal-40 point season.</p>
+</section>
+<section id="drew-oconnor" class="level4">
+<h4 class="anchored" data-anchor-id="drew-oconnor">Drew O’Connor</h4>
+<p>Drew O’Connor was a nice bright spot on what was a terrible season for the Vancouver Canucks. With 17 goals and an xG of 19, there’s lots of room for O’Connor to develop further as a goal scorer.</p>
+<div id="fig-oconnorcard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-oconnorcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/o'connorcard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-oconnorcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;49: Drew O’Connor’s probability card.
+</figcaption>
+</figure>
+</div>
+<p>His Corsi% is his only weak point, something that can both be attributed to him and the team around him, but his ability to create scoring chances is notable. With a (hopefully) increased quality Vancouver Canucks team next season, O’Connor might find himself as a sneaky breakout, much like that of Pavel Zacha from the case studies.</p>
+</section>
+<section id="gabriel-perreault" class="level4">
+<h4 class="anchored" data-anchor-id="gabriel-perreault">Gabriel Perreault</h4>
+<p>The final “out-there” breakout pick that was between 20-50 in the coverage model is Gabe Perreault. As a rookie last season, Perreault found decent production, but definitely left more on the table.</p>
+<div id="fig-perreaultcard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-perreaultcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figures/Hockey%20Cards/perraultcard.jpg" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-perreaultcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;50: Gabe Perreault’s probability card.
+</figcaption>
+</figure>
+</div>
+<p>With an extra year of development, more games played, and a potential increase in production, Perreault could quickly become a star for a Rangers team that is desperate for one. His 50% Corsi is the first thing that needs to improve, but his rockstar 16% shooting% staying constant with him taking more shots would certainly lead to a breakout.</p>
+</section>
+</section>
+</section>
+<section id="limitations-1" class="level2">
+<h2 class="anchored" data-anchor-id="limitations-1">Limitations</h2>
+<p>Several limitations should be considered while interpreting the results of this project.</p>
+<p>Firstly, this project relied solely on publicly available player statistics. While the MoneyPuck.com dataset contained many useful metrics, such as xG, Corsi%, etc., it does not account for every possible factor that could influence player development. Variables such as linemate quality, injuries, power-play deployment, age, and organizational success is not accounted for in the dataset, and all might play big roles in whether or not a player breaks out.</p>
+<p>Secondly, the definition produced of a breakout was necessarily subjective. This obviously produces a limitation, while the definition provided may be considered well thought out, other definitions and thresholds should be considered and could reasonably produce differing results.</p>
+<p>Another limitation to be considered is the relatively low amount of positive observations (breakout players) in the dataset. Player-seasons that can be classified as “breakouts” are quite seldom by nature, resulting in an imbalanced classification problem. While evaluators such as P@K and AUC were used to limit this issue, the small number of breakout players inevitably introduces additional uncertainty into the training of the model and evaluation.</p>
+<p>Finally, by nature, player development is inherently unpredictable. Even the most comprehensive and effective statistical model cannot fully anticipate the changes in opportunity, injuries, or other factors that could affect a player’s mindset, play, and development. Consequently, the probabilities given by the model should wholly be taken as probabilities of a breakout rather than an inherent certainty.</p>
+<p>Despite these limitations, the models created were consistently able to identify meaningful patterns and statistical signals that were associated with breakout seasons, which can provide valuable demonstrations that machine learning is able to meaningfully provide insight into NHL breakout predictions.</p>
+</section>
+<section id="future-work" class="level2">
+<h2 class="anchored" data-anchor-id="future-work">Future Work</h2>
+<p>The models developed in this project showed an ability to identify breakouts in the NHL, but there are several avenues to move forward to both improve this project and expand it to other facets of hockey analytics.</p>
+<section id="improvements" class="level3">
+<h3 class="anchored" data-anchor-id="improvements">Improvements</h3>
+<p>While the XGBoost algorithm provided good results, it still is worth exploring other machine learning approaches. Using methods such as neural networks, time-series approaches, or advanced ensemble methods could be explored to potentially capture things missing in the models used by this project.</p>
+<p>Furthermore, there could be a dataset improvement used by incorporating age, linemates, team skill, and other indicators of player ability not utilized in this project. These additional variables would certainly provide deeper insight that might make a model better.</p>
+</section>
+<section id="expansion" class="level3">
+<h3 class="anchored" data-anchor-id="expansion">Expansion</h3>
+<p>This project only focused on forward breakouts. While this decision simplified the process, only creating the need to analyze one group of players, it excludes an entire landscape of NHL players that could be examined.</p>
+<p>Future work could develop separate breakout criteria specifically for defenseman, and specific criteria for goalies. For defenseman, this would mean defining value in a much more metric focused way, as offensive production does not necessarily equate to being a good NHL defenseman. For goaltenders, an entirely new dataset could be examined with new criteria and statistics to work with, while learning from the process of this project.</p>
+<p>Finally, the most obvious avenue to continue this work is to check back on the model’s predictions later in the season, see what it hit on, and see what it didn’t hit on, and make predictions for the following season. This would allow the model to have an additional season of data to work with, a new set of breakout candidates to explore, and overall be a fun expansion to this project. The 2026-27 set of breakout candidates represent the first iteration of what can become an annually update forecasting system.</p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>Predicting NHL breakouts is a challenging yet enticing problem in hockey analytics. This is due to the inherent complexity of NHL development and the seldom nature of breakout player-seasons. This project sought to address that. It planned to do this by combining machine learning techniques with hockey analytics to identify players that could break out with furthered offensive improvement.</p>
+<p>Beginning with publicly available NHL data provided by MoneyPuck.com, a breakout definition was defined and applied to the dataset. Following that, some meaningful features were engineered and applied to create machine learning models using various methods. Then, they were evaluated, and XGBoost was found to be the best machine learning approach, demonstrating a strong ability to evaluate players and find breakout candidates.</p>
+<p>Beyond just creating an effective model, the project provided insight into signals and characteristics that frequently preceded breakout seasons. This could be an increase in underlying offensive metrics, increased deployment and opportunity, and recent performance trends that proved more informative than traditional counting stats such as goals or points. At the same time, several situations, such as unpredictable deployment, change in team or deployment, and unforeseen increase in process proved unpredictable for the models.</p>
+<p>This project shows that predicting breakouts is not simply a matter of finding players with high point totals that have room to improve. It is more important to recognize the players whose underlying metrics show a story of a player who has not matched their process with their production. These circumstances often preceded breakouts. While no model can perfectly forecast true player development, the models produced here provide a practical approach to this problem.</p>
+<p>As newer seasons continue to occur, the data can be expanded, the model can be improved, and updated predictions can be made while refining the model and the process to better understand player development.</p>
+</section>
+<section id="appendix" class="level2">
+<h2 class="anchored" data-anchor-id="appendix">Appendix</h2>
+<section id="a.-data-availability" class="level3">
+<h3 class="anchored" data-anchor-id="a.-data-availability">A. Data Availability</h3>
+<p>The data used in this project come from MoneyPuck.com. More information on the dataset can both be found in the Data Documentation section of this report, as well as the MoneyPuck website itself. Processed datasets as well as the code for feature engineering, model training, and visualizations can be found in the accompanying GitHub repository.</p>
+<p><strong>GitHub Repository:</strong> (link)</p>
+</section>
+<section id="b.-feature-definitions" class="level3">
+<h3 class="anchored" data-anchor-id="b.-feature-definitions">B. Feature Definitions</h3>
+<p>Several variables used and referenced throughout this project were engineered via feature engineering. While they are relatively explained when they came up, the following table summarizes the engineered variables and their definitions.</p>
+<table class="caption-top table">
+<caption>Table A1: summary of engineered variables.</caption>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ppg</td>
+<td>Points per game</td>
+</tr>
+<tr class="even">
+<td>previous_best_points</td>
+<td>Highest previous season point total (otherwise known as career high)</td>
+</tr>
+<tr class="odd">
+<td>experience</td>
+<td>Number of NHL seasons played</td>
+</tr>
+<tr class="even">
+<td>change_points</td>
+<td>Change in points from the previous season</td>
+</tr>
+<tr class="odd">
+<td>change_xg</td>
+<td>Change in expected goals from the previous season</td>
+</tr>
+<tr class="even">
+<td>change_icetime</td>
+<td>Change in icetime from the previous season</td>
+</tr>
+<tr class="odd">
+<td>points_growth</td>
+<td>Relative change in points</td>
+</tr>
+<tr class="even">
+<td>xg_growth</td>
+<td>Relative change in expected goals</td>
+</tr>
+<tr class="odd">
+<td>points_2yr</td>
+<td>Two-year change in points</td>
+</tr>
+<tr class="even">
+<td>xg_2yr</td>
+<td>Two-year change in expected goals</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="c.-additional-figures" class="level3">
+<h3 class="anchored" data-anchor-id="c.-additional-figures">C. Additional Figures</h3>
+<p>Additional visualizations generated during the creation of this project but excluded from this project due to brevity can be found in the <strong>GitHub</strong> repository in the figures page. (link).</p>
+</section>
+<section id="d.-reproducibility" class="level3">
+<h3 class="anchored" data-anchor-id="d.-reproducibility">D. Reproducibility</h3>
+<p>This project was developed using R and the tidymodels ecosystem. Major packages that were used throughout the project include:</p>
+<ul>
+<li><p>tidyverse</p></li>
+<li><p>xgboost</p></li>
+<li><p>ggplot2</p></li>
+<li><p>pROC</p></li>
+<li><p>ggthemes</p></li>
+</ul>
+<p>Session information and package versions can be reproduced using the scripts available in the accompanying GitHub repository.</p>
+</section>
+<section id="e.-video" class="level3">
+<h3 class="anchored" data-anchor-id="e.-video">E. Video</h3>
+<p>This project was adapted into video format. The video link is accessible here: (link) or can be found on the accompanying repository.</p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

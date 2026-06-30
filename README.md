@@ -41,7 +41,19 @@ This project evaluates both created models using Precision@K (or Top-K Precision
 
 ## Example Visualizations
 
-(wip)
+The project has over 40 custom visualizations that aid in telling the story of some players, help analyze the model predictions, and help interpret the model. Below are a few examples:
+
+![Wyatt Johnston's Probability Card](/figures/Hockey%20Cards/johnstoncard.jpg)
+
+Each player who was directly mentioned in this project and given analysis for had a probability card made for them. This card detailed their current statline, their breakout statline (if applicable), as well as their probability for breakout, and was beautified and personalized to the player.
+
+![Probability Distribution of Breakout Probabilities](/figures/dist.png)
+
+The above plot shows the probability distribution of the player breakout probabilities, which was used to analyze how well the model did at assigning probabilities to players. 
+
+![Emil Heineman compared to Kirill Marchenko](figures/heinemancomp.png)
+
+The above plot shows one of the highest rated predictions for the upcoming NHL seasons, Emil Heineman, compared to an existing star, Kirill Marchenko, highlighting the similarities and why this may indicate a breakout for Heineman.
 
 ## Data
 
@@ -75,4 +87,5 @@ There are several potential avenues for future work in regards to expansion and 
 
 ## About Me
 
-(wip)
+Name: Jacob Rasmussen
+School: Third year at University of Wisconsin - Madison.

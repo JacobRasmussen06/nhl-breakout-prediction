@@ -95,7 +95,7 @@ ul.task-list li input[type="checkbox"] {
 <div id="fig-breakouts" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-breakouts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/breakoutsbyyear.png" class="img-fluid figure-img">
+<img src="../figures/breakoutsbyyear.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-breakouts-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Number of players classified as breakout players in each season.
@@ -152,7 +152,7 @@ Figure&nbsp;1: Number of players classified as breakout players in each season.
 <section id="model-evaluation" class="level2">
 <h2 class="anchored" data-anchor-id="model-evaluation">Model Evaluation</h2>
 <p>Evaluating the model’s effectiveness for breakout prediction proved to be a unique challenge because breakout players only represent a very small percentage of total player-seasons at around 3% of all player-seasons with the given parameters. Thus, a model built to maximize accuracy should give all players 0 probability to break out and it would be the most accurate model by far, despite providing no usefulness to solving the problem.</p>
-<p>To rectify this, evaluation of the models primarily focused on two metrics. First, Precision at K (P@K) — sometimes hereafter also referred to as Top K Precision. It represents the proportion of actual breakout players contained in the top K of the model’s ranked list of breakout probabilities. For example, if a model’s top 10 in probability contained 4 true breakout players, it is said to have a P@10 or Top 10 Precision of 4/10 or .4. This method of evaluation was chosen because of its practicality given the problem the project is trying to solve. It directly evaluates how well a given model does at identifying correct breakout candidates, which can be extended and used in the present and future seasons.</p>
+<p>To rectify this, evaluation of the models primarily focused on two metrics. First, Precision at K (P@K) — sometimes hereafter also referred to as Top K Precision. It represents the proportion of actual breakout players contained in the top K of the model’s ranked list of breakout probabilities. For example, if a model’s top 10 in probability contained 4 true breakout players, it is said to have a P@10 or Top 10 Precision of 4, or 4/10 or 0.4. This method of evaluation was chosen because of its practicality given the problem the project is trying to solve. It directly evaluates how well a given model does at identifying correct breakout candidates, which can be extended and used in the present and future seasons.</p>
 <p>The second metric used was Area Under the Receiver-Operating Curve (AUC). The Receiver-Operating Curve (ROC) is obtained by graphing the True Positive Rate (TPR) over the False Positive Rate (FPR), and the AUC is simply the area under that curve. It represents the probability that the model, if given a random negative result and a random positive result. In this case, it means ranking a player who indeed broke out above a player who did not. Therefore, the scale for AUC is 0 to 1, and a higher AUC indicates the model is better able to distinguish breakout players from non-breakout players.</p>
 <section id="model-comparison" class="level3">
 <h3 class="anchored" data-anchor-id="model-comparison">Model Comparison</h3>
@@ -160,7 +160,7 @@ Figure&nbsp;1: Number of players classified as breakout players in each season.
 <div id="fig-auc" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-auc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/aucbymodel.png" class="img-fluid figure-img">
+<img src="../figures/aucbymodel.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-auc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2: AUC of each model tested.
@@ -171,7 +171,7 @@ Figure&nbsp;2: AUC of each model tested.
 <div id="fig-top10" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-top10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/top10precision.png" class="img-fluid figure-img">
+<img src="../figures/top10precision.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-top10-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;3: Top 10 Precision of each model.
@@ -181,7 +181,7 @@ Figure&nbsp;3: Top 10 Precision of each model.
 <div id="fig-top30" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-top30-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/top30precision.png" class="img-fluid figure-img">
+<img src="../figures/top30precision.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-top30-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;4: Top 30 Precision of each model.
@@ -191,7 +191,7 @@ Figure&nbsp;4: Top 30 Precision of each model.
 <div id="fig-top50" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-top50-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/top50precision.png" class="img-fluid figure-img">
+<img src="../figures/top50precision.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-top50-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;5: Top 50 Precision of each model.
@@ -202,7 +202,7 @@ Figure&nbsp;5: Top 50 Precision of each model.
 <div id="fig-comparison" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/precisionvcoverage.png" class="img-fluid figure-img">
+<img src="../figures/precisionvcoverage.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-comparison-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;6: Top-K Precision of the two final models.
@@ -297,7 +297,7 @@ Figure&nbsp;6: Top-K Precision of the two final models.
 <div id="fig-importance" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-importance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/importance.png" class="img-fluid figure-img">
+<img src="../figures/importance.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-importance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;7: Feature importance.
@@ -313,7 +313,7 @@ Figure&nbsp;7: Feature importance.
 <div id="fig-jitter" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-jitter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/predvsactual.png" id="fig-jitter" class="img-fluid figure-img">
+<img src="../figures/predvsactual.png" id="fig-jitter" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-jitter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;8
@@ -323,7 +323,7 @@ Figure&nbsp;8
 <div id="fig-probbyrate" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-probbyrate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/breakoutbyprob.png" class="img-fluid figure-img">
+<img src="../figures/breakoutbyprob.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-probbyrate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;9: Breakout rate by predicted probability.
@@ -339,7 +339,7 @@ Figure&nbsp;9: Breakout rate by predicted probability.
 <div id="fig-density" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/dist.png" class="img-fluid figure-img">
+<img src="../figures/dist.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-density-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;10: Density of the predicted probabilities.
@@ -349,7 +349,7 @@ Figure&nbsp;10: Density of the predicted probabilities.
 <div id="fig-cdf" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cdf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/cdf.png" class="img-fluid figure-img">
+<img src="../figures/cdf.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cdf-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;11: Cumulative Distribution of the predicted probabilities.
@@ -365,7 +365,7 @@ Figure&nbsp;11: Cumulative Distribution of the predicted probabilities.
 <div id="fig-ranked" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ranked-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/ranked.png" class="img-fluid figure-img">
+<img src="../figures/ranked.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ranked-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;12: Ranked probabilities.
@@ -386,7 +386,7 @@ Figure&nbsp;12: Ranked probabilities.
 <div id="fig-johnstoncard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-johnstoncard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/johnstoncard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/johnstoncard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-johnstoncard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;13: Wyatt Johnston’s probability card.
@@ -397,7 +397,7 @@ Figure&nbsp;13: Wyatt Johnston’s probability card.
 <div id="fig-johnstontraj" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-johnstontraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/johnstontrajectory.png" class="img-fluid figure-img">
+<img src="../figures/johnstontrajectory.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-johnstontraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;14: Wyatt Johnston’s career trajectory.
@@ -409,7 +409,7 @@ Figure&nbsp;14: Wyatt Johnston’s career trajectory.
 <div id="fig-johnstoncomp" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-johnstoncomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/johnstoncomp.png" class="img-fluid figure-img">
+<img src="../figures/johnstoncomp.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-johnstoncomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;15: Wyatt Johnston compared to the league as a whole.
@@ -420,7 +420,7 @@ Figure&nbsp;15: Wyatt Johnston compared to the league as a whole.
 <div id="fig-johnstonhdxg" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-johnstonhdxg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/johnstonhdxg.png" class="img-fluid figure-img">
+<img src="../figures/johnstonhdxg.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-johnstonhdxg-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;16: Wyatt Johnston compared to the league in HDxG.
@@ -438,7 +438,7 @@ Figure&nbsp;16: Wyatt Johnston compared to the league in HDxG.
 <div id="fig-zachacard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-zachacard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/zachacard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/zachacard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zachacard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;17: Pavel Zacha’s probability card.
@@ -450,7 +450,7 @@ Figure&nbsp;17: Pavel Zacha’s probability card.
 <div id="fig-zachatraj" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-zachatraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/zachtrajectory.png" class="img-fluid figure-img">
+<img src="../figures/zachtrajectory.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zachatraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;18: Pavel Zacha’s career trajectory.
@@ -461,7 +461,7 @@ Figure&nbsp;18: Pavel Zacha’s career trajectory.
 <div id="fig-zachapct" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-zachapct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/zachapct.png" class="img-fluid figure-img">
+<img src="../figures/zachapct.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zachapct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;19: Pavel Zacha’s statistical outlook in percentiles.
@@ -473,7 +473,7 @@ Figure&nbsp;19: Pavel Zacha’s statistical outlook in percentiles.
 <div id="fig-zachacomp" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-zachacomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/zachacomp.png" class="img-fluid figure-img">
+<img src="../figures/zachacomp.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zachacomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;20: Pavel Zacha compared to the league.
@@ -489,7 +489,7 @@ Figure&nbsp;20: Pavel Zacha compared to the league.
 <div id="fig-bensoncard1" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-bensoncard1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/bensonROOKIEcard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/bensonROOKIEcard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bensoncard1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;21: Zach Benson’s probability card following his rookie season.
@@ -500,7 +500,7 @@ Figure&nbsp;21: Zach Benson’s probability card following his rookie season.
 <div id="fig-bensoncard2" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-bensoncard2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/bensonBREAKOUTcard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/bensonBREAKOUTcard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bensoncard2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;22: Zach Benson’s probability card following his 2nd season.
@@ -512,7 +512,7 @@ Figure&nbsp;22: Zach Benson’s probability card following his 2nd season.
 <div id="fig-bensontraj" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-bensontraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/bensontraj.png" class="img-fluid figure-img">
+<img src="../figures/bensontraj.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bensontraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;23: Zach Benson’s career trajectory.
@@ -523,7 +523,7 @@ Figure&nbsp;23: Zach Benson’s career trajectory.
 <div id="fig-bensonpct" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-bensonpct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/bensonpct.png" class="img-fluid figure-img">
+<img src="../figures/bensonpct.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bensonpct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;24: Zach Benson’s career percentiles.
@@ -534,7 +534,7 @@ Figure&nbsp;24: Zach Benson’s career percentiles.
 <div id="fig-bensongap" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-bensongap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/bensongraph.png" class="img-fluid figure-img">
+<img src="../figures/bensongraph.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-bensongap-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;25: Zach Benson’s production finally caught his process.
@@ -550,7 +550,7 @@ Figure&nbsp;25: Zach Benson’s production finally caught his process.
 <div id="fig-zarycard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-zarycard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/zarycard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/zarycard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zarycard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;26: Connor Zary’s probability card.
@@ -561,7 +561,7 @@ Figure&nbsp;26: Connor Zary’s probability card.
 <div id="fig-zaryleague" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-zaryleague-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/zaryvleague.png" class="img-fluid figure-img">
+<img src="../figures/zaryvleague.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zaryleague-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;27: Connor Zary vs.&nbsp;the NHL.
@@ -572,7 +572,7 @@ Figure&nbsp;27: Connor Zary vs.&nbsp;the NHL.
 <div id="fig-zaryjohnston" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-zaryjohnston-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/zaryjohnstoncomp.png" class="img-fluid figure-img">
+<img src="../figures/zaryjohnstoncomp.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zaryjohnston-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;28: Connor Zary vs.&nbsp;Wyatt Johnston.
@@ -583,7 +583,7 @@ Figure&nbsp;28: Connor Zary vs.&nbsp;Wyatt Johnston.
 <div id="fig-zarypct" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-zarypct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/zarypct.png" class="img-fluid figure-img">
+<img src="../figures/zarypct.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-zarypct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;29: Connor Zary’s league percentiles.
@@ -599,7 +599,7 @@ Figure&nbsp;29: Connor Zary’s league percentiles.
 <div id="fig-cuyllecard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cuyllecard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/cuyllecard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/cuyllecard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cuyllecard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;30: Will Cuylle’s probability card.
@@ -610,7 +610,7 @@ Figure&nbsp;30: Will Cuylle’s probability card.
 <div id="fig-cuylletraj" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cuylletraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/cuylletraj.png" class="img-fluid figure-img">
+<img src="../figures/cuylletraj.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cuylletraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;31: Will Cuylle’s career trajectory
@@ -621,7 +621,7 @@ Figure&nbsp;31: Will Cuylle’s career trajectory
 <div id="fig-cuyllepct" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cuyllepct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/cuyllepct.png" class="img-fluid figure-img">
+<img src="../figures/cuyllepct.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cuyllepct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;32: Will Cuylle’s league percentiles.
@@ -632,7 +632,7 @@ Figure&nbsp;32: Will Cuylle’s league percentiles.
 <div id="fig-cuyllepuck" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-cuyllepuck-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/cuyllepuckluck.png" class="img-fluid figure-img">
+<img src="../figures/cuyllepuckluck.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-cuyllepuck-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;33: Will Cuylle found more opportunities.
@@ -648,7 +648,7 @@ Figure&nbsp;33: Will Cuylle found more opportunities.
 <div id="fig-luocard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-luocard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/luostarinencard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/luostarinencard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-luocard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;34: Eetu Luostarinen’s probability card.
@@ -659,7 +659,7 @@ Figure&nbsp;34: Eetu Luostarinen’s probability card.
 <div id="fig-luopct" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-luopct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/luopct.png" class="img-fluid figure-img">
+<img src="../figures/luopct.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-luopct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;35: Eetu Luostarinen’s league percentiles.
@@ -670,7 +670,7 @@ Figure&nbsp;35: Eetu Luostarinen’s league percentiles.
 <div id="fig-luotraj" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-luotraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/luotraj.png" class="img-fluid figure-img">
+<img src="../figures/luotraj.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-luotraj-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;36: Eetu Luostarinen’s career trajectory.
@@ -681,7 +681,7 @@ Figure&nbsp;36: Eetu Luostarinen’s career trajectory.
 <div id="fig-luoshot" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-luoshot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/luoshot.png" class="img-fluid figure-img">
+<img src="../figures/luoshot.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-luoshot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;37: The reason behind Luostarinen’s breakout.
@@ -829,7 +829,7 @@ Figure&nbsp;37: The reason behind Luostarinen’s breakout.
 <div id="fig-heinemancard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-heinemancard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/heinemancard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/heinemancard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-heinemancard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;38: Emil Heineman’s probability card
@@ -840,7 +840,7 @@ Figure&nbsp;38: Emil Heineman’s probability card
 <div id="fig-heinemancomp" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-heinemancomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/heinemancomp.png" class="img-fluid figure-img">
+<img src="../figures/heinemancomp.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-heinemancomp-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;39: Heineman vs.&nbsp;Marchenko comparison.
@@ -857,7 +857,7 @@ Figure&nbsp;39: Heineman vs.&nbsp;Marchenko comparison.
 <div id="fig-mackiecard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-mackiecard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/samoskevichcard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/samoskevichcard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mackiecard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;40: Mackie Samoskevich’s probability card.
@@ -869,7 +869,7 @@ Figure&nbsp;40: Mackie Samoskevich’s probability card.
 <div id="fig-mackievis" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-mackievis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/samoskevichvis.png" class="img-fluid figure-img">
+<img src="../figures/samoskevichvis.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mackievis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;41: Mackie Samoskevich’s career trajectory.
@@ -884,7 +884,7 @@ Figure&nbsp;41: Mackie Samoskevich’s career trajectory.
 <div id="fig-kindelcard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-kindelcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/kindelcard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/kindelcard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-kindelcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;42: Ben Kindel’s probability card.
@@ -895,7 +895,7 @@ Figure&nbsp;42: Ben Kindel’s probability card.
 <div id="fig-kindelvis" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-kindelvis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/kindelvis.png" class="img-fluid figure-img">
+<img src="../figures/kindelvis.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-kindelvis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;43: Ben Kindel’s percentiles on important variables
@@ -911,7 +911,7 @@ Figure&nbsp;43: Ben Kindel’s percentiles on important variables
 <div id="fig-stankcard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-stankcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/stankovencard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/stankovencard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stankcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;44: Logan Stankoven’s probability card.
@@ -922,7 +922,7 @@ Figure&nbsp;44: Logan Stankoven’s probability card.
 <div id="fig-stankpct" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-stankpct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/stankovenpct.png" class="img-fluid figure-img">
+<img src="../figures/stankovenpct.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stankpct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;45: Logan Stankoven’s incredible profile compared to the league.
@@ -937,7 +937,7 @@ Figure&nbsp;45: Logan Stankoven’s incredible profile compared to the league.
 <div id="fig-woodcard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-woodcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/woodcard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/woodcard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-woodcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;46: Matthew Wood’s probability card.
@@ -948,7 +948,7 @@ Figure&nbsp;46: Matthew Wood’s probability card.
 <div id="fig-woodvis" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-woodvis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/woodvis.png" class="img-fluid figure-img">
+<img src="../figures/woodvis.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-woodvis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;47: Matthew Wood compared to the league.
@@ -1083,7 +1083,7 @@ Figure&nbsp;47: Matthew Wood compared to the league.
 <div id="fig-dvorskycard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-dvorskycard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/dvorskycard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/dvorskycard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dvorskycard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;48: Dalibor Dvorsky’s probability card.
@@ -1098,7 +1098,7 @@ Figure&nbsp;48: Dalibor Dvorsky’s probability card.
 <div id="fig-oconnorcard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-oconnorcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/o'connorcard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/o'connorcard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-oconnorcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;49: Drew O’Connor’s probability card.
@@ -1113,14 +1113,14 @@ Figure&nbsp;49: Drew O’Connor’s probability card.
 <div id="fig-perreaultcard" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-perreaultcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="figures/Hockey%20Cards/perraultcard.jpg" class="img-fluid figure-img">
+<img src="../figures/Hockey%20Cards/perraultcard.jpg" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-perreaultcard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;50: Gabe Perreault’s probability card.
 </figcaption>
 </figure>
 </div>
-<p>With an extra year of development, more games played, and a potential increase in production, Perreault could quickly become a star for a Rangers team that is desperate for one. His 50% Corsi is the first thing that needs to improve, but his rockstar 16% shooting% staying constant with him taking more shots would certainly lead to a breakout.</p>
+<p>With an extra year of development, more games played, and a potential increase in production, Perreault could quickly become a star for a Rangers team that is desperate for one. His 50% Corsi% is the first thing that needs to improve, but his rockstar 16% shooting percentage staying constant with him taking more shots would certainly lead to a breakout.</p>
 </section>
 </section>
 </section>
@@ -1144,7 +1144,7 @@ Figure&nbsp;50: Gabe Perreault’s probability card.
 <section id="expansion" class="level3">
 <h3 class="anchored" data-anchor-id="expansion">Expansion</h3>
 <p>This project only focused on forward breakouts. While this decision simplified the process, only creating the need to analyze one group of players, it excludes an entire landscape of NHL players that could be examined.</p>
-<p>Future work could develop separate breakout criteria specifically for defenseman, and specific criteria for goalies. For defenseman, this would mean defining value in a much more metric focused way, as offensive production does not necessarily equate to being a good NHL defenseman. For goaltenders, an entirely new dataset could be examined with new criteria and statistics to work with, while learning from the process of this project.</p>
+<p>Future work could develop separate breakout criteria specifically for defensemen, and specific criteria for goalies. For defensemen, this would mean defining value in a much more metric focused way, as offensive production does not necessarily equate to being a good NHL defensemen. For goaltenders, an entirely new dataset could be examined with new criteria and statistics to work with, while learning from the process of this project.</p>
 <p>Finally, the most obvious avenue to continue this work is to check back on the model’s predictions later in the season, see what it hit on, and see what it didn’t hit on, and make predictions for the following season. This would allow the model to have an additional season of data to work with, a new set of breakout candidates to explore, and overall be a fun expansion to this project. The 2026-27 set of breakout candidates represent the first iteration of what can become an annually update forecasting system.</p>
 </section>
 </section>
@@ -1161,7 +1161,7 @@ Figure&nbsp;50: Gabe Perreault’s probability card.
 <section id="a.-data-availability" class="level3">
 <h3 class="anchored" data-anchor-id="a.-data-availability">A. Data Availability</h3>
 <p>The data used in this project come from MoneyPuck.com. More information on the dataset can both be found in the Data Documentation section of this report, as well as the MoneyPuck website itself. Processed datasets as well as the code for feature engineering, model training, and visualizations can be found in the accompanying GitHub repository.</p>
-<p><strong>GitHub Repository:</strong> (link)</p>
+<p><strong>GitHub Repository:</strong> https://github.com/JacobRasmussen06/nhl-breakout-prediction</p>
 </section>
 <section id="b.-feature-definitions" class="level3">
 <h3 class="anchored" data-anchor-id="b.-feature-definitions">B. Feature Definitions</h3>
@@ -1224,7 +1224,7 @@ Figure&nbsp;50: Gabe Perreault’s probability card.
 </section>
 <section id="c.-additional-figures" class="level3">
 <h3 class="anchored" data-anchor-id="c.-additional-figures">C. Additional Figures</h3>
-<p>Additional visualizations generated during the creation of this project but excluded from this project due to brevity can be found in the <strong>GitHub</strong> repository in the figures page. (link).</p>
+<p>Additional visualizations generated during the creation of this project but excluded from this project due to brevity can be found in the <strong>GitHub</strong> repository in the /figures page: https://github.com/JacobRasmussen06/nhl-breakout-prediction/tree/main/figures.</p>
 </section>
 <section id="d.-reproducibility" class="level3">
 <h3 class="anchored" data-anchor-id="d.-reproducibility">D. Reproducibility</h3>
@@ -1237,10 +1237,6 @@ Figure&nbsp;50: Gabe Perreault’s probability card.
 <li><p>ggthemes</p></li>
 </ul>
 <p>Session information and package versions can be reproduced using the scripts available in the accompanying GitHub repository.</p>
-</section>
-<section id="e.-video" class="level3">
-<h3 class="anchored" data-anchor-id="e.-video">E. Video</h3>
-<p>This project was adapted into video format. The video link is accessible here: (link) or can be found on the accompanying repository.</p>
 </section>
 </section>
 

@@ -33,7 +33,7 @@ Next, it was chosen that a breakout player must have never achieved 60 points be
 
 Finally, a couple of parameters surrounding the players points-per-game (PPG) statistic were chosen. The player's PPG must increase by at least 20%, while the actual PPG stat itself must increase by .15. These were each chosen to make sure that players that broke out actually made meaningful improvements to their production, both on the literal scale of increasing their points per game output, but also meaningfully increasing the scaled PPG.
 
-![Number of players classified as breakout players in each season.](figures/breakoutsbyyear.png){#fig-breakouts}
+![Number of players classified as breakout players in each season.](../figures/breakoutsbyyear.png){#fig-breakouts}
 
 As seen in @fig-breakouts, there was quite a large fluctuation of breakouts, and while the parameters were able to allow for some breakouts in the shortened seasons, there were far less breakouts produced than average. It was decided that while this is a shortcoming of the definition, it was a trade-off for creating a consistent set of parameters that was ultimately worth it for this project.
 
@@ -91,7 +91,7 @@ The performance and interpretation of the XGBoost models is examined in the foll
 
 Evaluating the model's effectiveness for breakout prediction proved to be a unique challenge because breakout players only represent a very small percentage of total player-seasons at around 3% of all player-seasons with the given parameters. Thus, a model built to maximize accuracy should give all players 0 probability to break out and it would be the most accurate model by far, despite providing no usefulness to solving the problem.
 
-To rectify this, evaluation of the models primarily focused on two metrics. First, Precision at K (P\@K) — sometimes hereafter also referred to as Top K Precision. It represents the proportion of actual breakout players contained in the top K of the model's ranked list of breakout probabilities. For example, if a model's top 10 in probability contained 4 true breakout players, it is said to have a P\@10 or Top 10 Precision of 4/10 or .4. This method of evaluation was chosen because of its practicality given the problem the project is trying to solve. It directly evaluates how well a given model does at identifying correct breakout candidates, which can be extended and used in the present and future seasons.
+To rectify this, evaluation of the models primarily focused on two metrics. First, Precision at K (P\@K) — sometimes hereafter also referred to as Top K Precision. It represents the proportion of actual breakout players contained in the top K of the model's ranked list of breakout probabilities. For example, if a model's top 10 in probability contained 4 true breakout players, it is said to have a P\@10 or Top 10 Precision of 4, or 4/10 or 0.4. This method of evaluation was chosen because of its practicality given the problem the project is trying to solve. It directly evaluates how well a given model does at identifying correct breakout candidates, which can be extended and used in the present and future seasons.
 
 The second metric used was Area Under the Receiver-Operating Curve (AUC). The Receiver-Operating Curve (ROC) is obtained by graphing the True Positive Rate (TPR) over the False Positive Rate (FPR), and the AUC is simply the area under that curve. It represents the probability that the model, if given a random negative result and a random positive result. In this case, it means ranking a player who indeed broke out above a player who did not. Therefore, the scale for AUC is 0 to 1, and a higher AUC indicates the model is better able to distinguish breakout players from non-breakout players.
 
@@ -99,19 +99,19 @@ The second metric used was Area Under the Receiver-Operating Curve (AUC). The Re
 
 During the course of tuning a model, five different versions of XGBoost algorithm with different parameters and features were tested, as well as two different versions of Random Forest and a singular version of logistic regression. Performance of these models was compared using the evaluators AUC and Top-K Precision as explained in the previous section.
 
-![AUC of each model tested.](figures/aucbymodel.png){#fig-auc}
+![AUC of each model tested.](../figures/aucbymodel.png){#fig-auc}
 
 As seen in @fig-auc, the XGBoost models dominated in terms of AUC. While the gains between the models were marginal, they were still gains, and the two models that eventually became the two models that were used, XGBoost v4 Precision and XGBoost v4 Coverage, were the two best models by AUC.
 
-![Top 10 Precision of each model.](figures/top10precision.png){#fig-top10}
+![Top 10 Precision of each model.](../figures/top10precision.png){#fig-top10}
 
-![Top 30 Precision of each model.](figures/top30precision.png){#fig-top30}
+![Top 30 Precision of each model.](../figures/top30precision.png){#fig-top30}
 
-![Top 50 Precision of each model.](figures/top50precision.png){#fig-top50}
+![Top 50 Precision of each model.](../figures/top50precision.png){#fig-top50}
 
 @fig-top10, @fig-top30, and @fig-top50 show the P\@K of each model. This produced some interesting insights that helped justify the model selection. Firstly, the XGBoost v4 Precision dominated Top-10 Precision, which landed it its name. It proved to be an incredibly precise model, taking in less features than the coverage model and tuning the parameters slightly differently, leading to a more precise top 10 and 30. The coverage model, however, falters in the top 10 and top 30, but shines in the 30-50 range, much like the XGBoost v3 model whose features it used. The hypertuning of the XGBoost v3 model gave the coverage model its AUC without sacrificing its Top-50 coverage, making it a useful model when used alongside the precision model.
 
-![Top-K Precision of the two final models.](figures/precisionvcoverage.png){#fig-comparison}
+![Top-K Precision of the two final models.](../figures/precisionvcoverage.png){#fig-comparison}
 
 @fig-comparison shows the contrast between the two models directly. We see the coverage model's strength at the lesser level between the top 10 and the rest of the top 50, as well as the precision model's strong top 10.
 
@@ -144,7 +144,7 @@ In contrast to simply evaluating how well a model does at certain metrics, it ca
 
 To examine which factors matter most, feature importance values were extracted from the XGBoost Coverage v4 model and analyzed. Feature importance is a metric that calculates a score for each input feature based on how much it contributes to a model's predictions. A higher score indicates a stronger influence.
 
-![Feature importance.](figures/importance.png){#fig-importance}
+![Feature importance.](../figures/importance.png){#fig-importance}
 
 @fig-importance shows that a few features were extremely important, and then more features were less important but still valuable to the model. As seen, Expected Goals and Previous Best Points were the two most important features. This makes logical sense, given that xG is a very telling and useful metric at showing underlying production, while the previous best points feature was most certainly extremely useful at predicting negatives, given the parameters and the unlikelihood of someone with an already relatively high previous career high in points to break out again.
 
@@ -154,9 +154,9 @@ Other important features, such as points per game, Corsi%, or ice time, highligh
 
 By nature of the model, probabilities are produced rather than binary classifications. There is no threshold of probability that makes a player certain to breakout, but the higher the probability, the more sure we can be that a player might break out if given the opportunity.
 
-![](figures/predvsactual.png){#fig-jitter}
+![](../figures/predvsactual.png){#fig-jitter}
 
-![Breakout rate by predicted probability.](figures/breakoutbyprob.png){#fig-probbyrate}
+![Breakout rate by predicted probability.](../figures/breakoutbyprob.png){#fig-probbyrate}
 
 @fig-jitter plots the predicted probability against the actual outcomes. While the breakout and non-breakout players are not perfectly separated, indicating no clear threshold for a classification, a clear trend emerges. The players that were assigned high probabilities broke out much more than the players assigned a low probability. This relationship demonstrates that the model indeed captures information about a players future development.
 
@@ -166,9 +166,9 @@ By nature of the model, probabilities are produced rather than binary classifica
 
 The distribution of the predicted breakout probabilities can provide more context to the model's outputs. The following figures illustrate the density and cumulative distribution function of the breakout probabilities.
 
-![Density of the predicted probabilities.](figures/dist.png){#fig-density}
+![Density of the predicted probabilities.](../figures/dist.png){#fig-density}
 
-![Cumulative Distribution of the predicted probabilities.](figures/cdf.png){#fig-cdf}
+![Cumulative Distribution of the predicted probabilities.](../figures/cdf.png){#fig-cdf}
 
 A majority of player-seasons receive a low probability to break out, reflecting the reality that a breakout season is highly uncommon among every single forward in the NHL. Only a small fraction of players achieve a probability above that of the league average.
 
@@ -178,7 +178,7 @@ This skewed distribution reinforces the importance of ranking the players instea
 
 The following figure illustrates the ranking process of the model.
 
-![Ranked probabilities.](figures/ranked.png){#fig-ranked}
+![Ranked probabilities.](../figures/ranked.png){#fig-ranked}
 
 As shown, a small number of players receive the higher probability than the rest of the league, identifying them as a natural set of players that should be investigated for their breakout probability. This framework allows analysis to focus on the most promising players.
 
@@ -194,21 +194,21 @@ Wyatt Johnston as a rookie had all the boxes checked to be a future superstar. H
 
 Each player of the six case studies as well as every predicted player for next season had a probability card made of them. @fig-johnstoncard is Wyatt Johnston's.
 
-![Wyatt Johnston's probability card.](figures/Hockey%20Cards/johnstoncard.jpg){#fig-johnstoncard}
+![Wyatt Johnston's probability card.](../figures/Hockey%20Cards/johnstoncard.jpg){#fig-johnstoncard}
 
 The model put high faith in him, listing Johnston with a 31.7% chance of breakout, the best of any player-season in the testing dataset. Johnston immediately delivered, upping his goals and points production with increased icetime and better positioned himself for goals, raising his underlying metrics even higher. He established himself as one of the league's top young forwards, but his climb did not stop there.
 
-![Wyatt Johnston's career trajectory.](figures/johnstontrajectory.png){#fig-johnstontraj}
+![Wyatt Johnston's career trajectory.](../figures/johnstontrajectory.png){#fig-johnstontraj}
 
 @fig-johnstontraj shows Johnston's career trajectory in terms of points and expected goals. Johnston stayed relatively stagnant the year following his breakout, but last season he cemented himself as a true first line center and superstar, notching his first 40 goal season with 45 tallies and 86 points, while his underlying metrics just got better and better.
 
 With Wyatt Johnston being such an obvious breakout candidate, it's worth looking into what exactly the model saw in him that was different from everyone else. @fig-johnstoncomp explores this comparison.
 
-![Wyatt Johnston compared to the league as a whole.](figures/johnstoncomp.png){#fig-johnstoncomp}
+![Wyatt Johnston compared to the league as a whole.](../figures/johnstoncomp.png){#fig-johnstoncomp}
 
 Johnston was above average in every single one of these four stats, which is made even more impressive considering he was just a rookie. The ice time gave him opportunity to shine, which he made the most of with good positioning for solid xG and High Danger xG (HDxG) metrics, and his Corsi% was solid as well.
 
-![Wyatt Johnston compared to the league in HDxG.](figures/johnstonhdxg.png){#fig-johnstonhdxg}
+![Wyatt Johnston compared to the league in HDxG.](../figures/johnstonhdxg.png){#fig-johnstonhdxg}
 
 @fig-johnstonhdxg shows Johnston's HDxG compared to the league. HDxG is an interesting indicator stat because of its uniqueness in telling two stories at the same time: every shot in the league has both a probability to go in the net and become a goal, which contributes to your expected goals, as well as a danger level assigned because of its distance to the net and nature of the play leading to the shot. All high danger shots have an probabillity above .20 of resulting in a goal. HDxG quantifies two things: your shooting ability and your positioning. By having an above average HDxG, you're displaying an ability to position yourself in good places to get high danger shots off as well as being a good enough shooter to convert those shots into goals.
 
@@ -222,23 +222,23 @@ In contrast to the writing-on-the-wall breakout of Wyatt Johnston, the story of 
 
 The Devils shipped him off to Boston for Erik Haula, a move that would make them money to attempt to make a big splash in free agency. While the Devils gave up on his upside, the model did not.
 
-![Pavel Zacha's probability card.](figures/Hockey%20Cards/zachacard.jpg){#fig-zachacard}
+![Pavel Zacha's probability card.](../figures/Hockey%20Cards/zachacard.jpg){#fig-zachacard}
 
 It gave Zacha a 20.3% chance to break out, which was really high for all player-seasons in the testing set. It believed that his production would eventually match his process, notably seeing that Zacha's xG was higher than his actual goal count.
 
 A change of scenery proved to be the best thing for Zacha. He played the first full season in his career, and despite losing almost a minute on average ice time, his production rose.
 
-![Pavel Zacha's career trajectory.](figures/zachtrajectory.png){#fig-zachatraj}
+![Pavel Zacha's career trajectory.](../figures/zachtrajectory.png){#fig-zachatraj}
 
 Since joining the Bruins, as we can see in @fig-zachatraj, Pavel Zacha's points total has never dipped below 47, with that being a down year, as he's been able to stay around 60 points in the other three years. He's grown into an incredibly productive top six forward, with that first breakout year being the catalyst.
 
-![Pavel Zacha's statistical outlook in percentiles.](figures/zachapct.png){#fig-zachapct}
+![Pavel Zacha's statistical outlook in percentiles.](../figures/zachapct.png){#fig-zachapct}
 
 @fig-zachapct shows Zacha's percentiles through his career in the relevant stats. In the season before his 22-23 breakout, his underlying metrics all took a massive leap towards around 75th percentile, but his points stayed put at the 65th-70th percentile it was at the season prior. This underlying increase shows an indicator for breakout: when the player's production is below their underlying process, there is room for them to break out.
 
 In Zacha's case this happened instantly. His point production the following season rose back up above his production, which admittedly took a tiny dip, and he broke out.
 
-![Pavel Zacha compared to the league.](figures/zachacomp.png){#fig-zachacomp}
+![Pavel Zacha compared to the league.](../figures/zachacomp.png){#fig-zachacomp}
 
 @fig-zachacomp cements Zacha's incredible process the season prior to his breakout. He was well above average in each of the three underlying stats, and got decent icetime, but his production just wasn't there. The change of scenery that came with being traded and the jump his points made to catch up to his process led to Zacha's breakout to stardom.
 
@@ -248,25 +248,25 @@ While the previous two case studies showed how the model can get it right, the n
 
 Benson was the 13th overall pick in the 2023 Draft, a highly touted prospect who really only lacked in size. His first season was okay, notching 11 goals and a respectable 30 points in 71 games, flashing potential along the way for a Sabres team that was floundering. The models believed in rookie year Benson to break out, noting his xG being higher than his goal count and the fact that he was well above average in every metric as just a rookie. His probability card is seen below in @fig-bensoncard1.
 
-![Zach Benson's probability card following his rookie season.](figures/Hockey%20Cards/bensonROOKIEcard.jpg){#fig-bensoncard1}
+![Zach Benson's probability card following his rookie season.](../figures/Hockey%20Cards/bensonROOKIEcard.jpg){#fig-bensoncard1}
 
 However, Benson did not break out in his 2nd season. He got better as a play driver, raising his Corsi% while shooting slightly worse from high danger situations. It was all in all a disappointing second year, but the model reaffirmed its faith in him, giving him a much stronger 26.7% chance to break out, as can be seen in @fig-bensoncard2. And, for what its worth, Benson did break out!
 
-![Zach Benson's probability card following his 2nd season.](figures/Hockey%20Cards/bensonBREAKOUTcard.jpg){#fig-bensoncard2}
+![Zach Benson's probability card following his 2nd season.](../figures/Hockey%20Cards/bensonBREAKOUTcard.jpg){#fig-bensoncard2}
 
 While Benson still was lacking the goal-scoring touch that the xG would indicate, he was able to increase his point production considerably in his 3rd season, earning him a monster extension that could prove incredible for his Sabres if he pans out even more.
 
 This raises an important consideration, though, about the model. It gave Benson a decent chance to break out, he didn't, and then it chose him again. It's definitely worth looking into what the model saw in Benson and see why the model would be early on a player.
 
-![Zach Benson's career trajectory.](figures/bensontraj.png){#fig-bensontraj}
+![Zach Benson's career trajectory.](../figures/bensontraj.png){#fig-bensontraj}
 
 The first interesting development regarding Zach Benson comes from his xG. His xG has remained relatively constant through his 3 years in the NHL, and in all three seasons his goal count was considerably less than his xG. This is relatively uncommon with stars, who usually overperform their metrics a little bit, so it makes sense why the model trusted him. The fact that he still has untapped scoring potential shows the increases Benson may still make in the future. It would not be shocking in the slightest if Benson has a Wyatt Johnston level breakout, going from mid-40s to mid-60s in points, with a jump in goal production.
 
-![Zach Benson's career percentiles.](figures/bensonpct.png){#fig-bensonpct}
+![Zach Benson's career percentiles.](../figures/bensonpct.png){#fig-bensonpct}
 
 The percentiles still show this room for improvement, as well as why the model loves him. He's consistently been a 75th or better percentile player in xG and HDxG, and his Corsi% fluctuates between there as well. His points production finally this season began to catch up to the rest, but there's certainly still room to improve for the 21 year old.
 
-![Zach Benson's production finally caught his process.](figures/bensongraph.png){#fig-bensongap}
+![Zach Benson's production finally caught his process.](../figures/bensongraph.png){#fig-bensongap}
 
 @fig-bensongap shows the production increase quite plainly. It can be useful to see the xG percentile and points percentile together, but this graph directly shows them in contrast. It took until his 3rd NHL season to do it, but his points production finally matched his xG boom. Again, in context, it's even more interesting knowing that this production increase did not occur because of Benson scoring more goals.
 
@@ -276,19 +276,19 @@ Benson provides an interesting insight into the model. It takes lots of stock in
 
 Connor Zary is one of the more interesting cases in this project. He's one of the model's biggest misses, a false positive. Another former first rounder, Zary came into the league with a lot of potential surrounding him. He got to play for a Calgary team that was going through a bit of a retool, trying to find its footing, and Zary's rookie season was promising, notching 14 goals and 34 points through 63 games. His following season, much like Zach Benson, was not an improvement, but the model believed in him to break through, much like Benson did.
 
-![Connor Zary's probability card.](figures/Hockey%20Cards/zarycard.jpg){#fig-zarycard}
+![Connor Zary's probability card.](../figures/Hockey%20Cards/zarycard.jpg){#fig-zarycard}
 
 Unlike Benson, that did not happen. He had by far his worst season yet in 25-26, playing the most games but scoring the least amount of points. While he may still break out next season, especially with the buzz that may come with him being traded away from a bad situation in Calgary (as of 6/25, he has not been traded), it's worth noting how the model got here. A pretty big swing and a miss.
 
-![Connor Zary vs. the NHL.](figures/zaryvleague.png){#fig-zaryleague}
+![Connor Zary vs. the NHL.](../figures/zaryvleague.png){#fig-zaryleague}
 
 @fig-zaryleague shows why the model believed in him. Compared to Zacha and Johnston, two correct breakout picks, Zary looks pretty comparable. He lagged slightly behind in xG, but notched the same Corsi% as Pavel Zacha and a very similar HDxG as the two. The icetime difference can be explained away by Zary only playing 54 games that season, too. All signs seemed to point towards a Connor Zary breakout, but it didn't come.
 
-![Connor Zary vs. Wyatt Johnston.](figures/zaryjohnstoncomp.png){#fig-zaryjohnston}
+![Connor Zary vs. Wyatt Johnston.](../figures/zaryjohnstoncomp.png){#fig-zaryjohnston}
 
 @fig-zaryjohnston shows a more in depth comparison between Zary and Johnston in the three underlying stats. We see that Zary is much better at producing shots, while Johnston is better at producing high quality shots. This graph shows us that Zary and Johnston are both similar players, both with high upside, only Johnston has found it while Zary has not.
 
-![Connor Zary's league percentiles.](figures/zarypct.png){#fig-zarypct}
+![Connor Zary's league percentiles.](../figures/zarypct.png){#fig-zarypct}
 
 It may be that Zary's case is like Zach Benson's, except Zary's breakout is going to take even longer, if it ever comes. We see in @fig-zarypct that Zary's metrics did not go down, aside from his Corsi%, last season, but that his points are still below his metrics.
 
@@ -298,19 +298,19 @@ Whether or not Zary will be able to eventually break out remains to be seen, and
 
 Will Cuylle is another interesting miss for the model. Unlike the other players that have been examined so far, Cuylle flew under the radar of the model, and actually broke out.
 
-![Will Cuylle's probability card.](figures/Hockey%20Cards/cuyllecard.jpg){#fig-cuyllecard}
+![Will Cuylle's probability card.](../figures/Hockey%20Cards/cuyllecard.jpg){#fig-cuyllecard}
 
 His probability card hints at an interesting underlying story. Unlike the other players we've looked at, Cuylle's xG metrics both nearly doubled from one season to the next. This doesn't indicate that he broke out because his production reached his process, this indicates that he simply became a better player in the course of the season, which is something the model is unable to account for.
 
-![Will Cuylle's career trajectory](figures/cuylletraj.png){#fig-cuylletraj}
+![Will Cuylle's career trajectory](../figures/cuylletraj.png){#fig-cuylletraj}
 
 Cuylle's trajectory shares the same story. Unlike Pavel Zacha who improved before he broke out, Will Cuylle improved his xG and his points the same season. This jump doubled his points total and nearly doubled his xG. A look at his percentile ranks in the figure below helps quantify this further.
 
-![Will Cuylle's league percentiles.](figures/cuyllepct.png){#fig-cuyllepct}
+![Will Cuylle's league percentiles.](../figures/cuyllepct.png){#fig-cuyllepct}
 
 Will Cuylle had an incredible improvement from his first full season to his 2nd, and was able stay consistently there in his third. It raises the question of how the model missed this underlying potential, and how it flew under the rug of everyone. An interesting hint was given in making the probability card, seeing that Cuylle's icetime dramatically increased, and thus, the next figure was engineered to explore this.
 
-![Will Cuylle found more opportunities.](figures/cuyllepuckluck.png){#fig-cuyllepuck}
+![Will Cuylle found more opportunities.](../figures/cuyllepuckluck.png){#fig-cuyllepuck}
 
 @fig-cuyllepuck shows a large reason for Will Cuylle's breakout. His icetime dramatically improved, ranking him in the top 600 as opposed to around 800th in the NHL in ice time. This aligned with a development in his shooting that raised his Shooting %, which led to increased production.
 
@@ -320,19 +320,19 @@ This insight highlights a flaw with the model that could be fixed in the future.
 
 Eetu Luostarinen, at first glance to his probability card below, looks to be a similar story to Will Cuylle. A player who seemingly out of nowhere increased his production and became a star, but there is more than meets the eye with Eetu Luostarinen.
 
-![Eetu Luostarinen's probability card.](figures/Hockey%20Cards/luostarinencard.jpg){#fig-luocard}
+![Eetu Luostarinen's probability card.](../figures/Hockey%20Cards/luostarinencard.jpg){#fig-luocard}
 
 Any Panthers fan could tell you that Luostarinen has not hit that points total ever since that 22-23 breakout season, and hasn't even really been close except for this past season.
 
-![Eetu Luostarinen's league percentiles.](figures/luopct.png){#fig-luopct}
+![Eetu Luostarinen's league percentiles.](../figures/luopct.png){#fig-luopct}
 
 As shown in @fig-luopct, Eetu Luostarinen made a dramatic improvement in 2022, but he's completely lacked consistency since. His Corsi% has fluctuated, as well as his xG and HDxG and his points fell flat for a couple of seasons before climbing back to meet the expected goals metrics again this past season. This raises an important question: why did Eetu Luostarinen break out, and why couldn't he maintain that production?
 
-![Eetu Luostarinen's career trajectory.](figures/luotraj.png){#fig-luotraj}
+![Eetu Luostarinen's career trajectory.](../figures/luotraj.png){#fig-luotraj}
 
 A look at his career trajectory reaffirms the question. His xG indeed went down a couple of seasons following his breakout season, and he hasn't been able to find the same form as his 22-23 season. A quick look at his icetime totals show that his ice time did not go down on the stacked Florida squad either, his icetime has consistently averaged around 15-16 minutes a night since that breakout season in 22-23.
 
-![The reason behind Luostarinen's breakout.](figures/luoshot.png){#fig-luoshot}
+![The reason behind Luostarinen's breakout.](../figures/luoshot.png){#fig-luoshot}
 
 Further investigation, as shown by @fig-luoshot, shows that the answer to what fueled Luostarinen's breakout was right in front of his profile the entire time. In his breakout 2022 season, Luostarinen peaked his shooting percentage at nearly 13%, a figure that has not been reached before or since. This explains why he scored a career high 17 goals and hasn't touched 12 since. It also explains another unexplainable phenomenon for the model: career highs are natural progressions of a player's development, but the model in its current state is unable to predict them happening and explain production away in that way.
 
@@ -393,11 +393,11 @@ From Table 2, I identified five players I believe are worth looking into and pic
 
 The first player that is one to watch to potentially break out is Emil Heineman. With the highest probability of anyone in the precision model, as shown in @fig-heinemancard, Heineman's first season with the Islanders was a productive one. He was a 20 goal scorer and productive middle sixer for a playoff hopeful Isles team, but he lacked the point production to really put him on the map as a rising star.
 
-![Emil Heineman's probability card](figures/Hockey%20Cards/heinemancard.jpg){#fig-heinemancard}
+![Emil Heineman's probability card](../figures/Hockey%20Cards/heinemancard.jpg){#fig-heinemancard}
 
 Heineman's high goal production but small points production is very reminiscent of division rival Blue Jackets' star Kirill Marchenko's rookie season. Marchenko in 22-23 notched 21 goals and just 4 assists. But, the comparison doesn't just stop at goals and points.
 
-![Heineman vs. Marchenko comparison.](figures/heinemancomp.png){#fig-heinemancomp}
+![Heineman vs. Marchenko comparison.](../figures/heinemancomp.png){#fig-heinemancomp}
 
 As seen in @fig-heinemancomp, Kirill Marchenko in 2022-23 and Emil Heineman in 25-26 were remarkably similar players who functioned in very similar ways. They both relied on their raw goal-scoring ability more than playmaking, and it led to them looking nearly identical in goals, xG, HDxG, and Corsi%.
 
@@ -409,13 +409,13 @@ Emil Heineman may position himself down a similar career path. If he can continu
 
 For a while up until his debut in 2023-24, Mackie Samoskevich had been one of the few prospects on a loaded with talent Panthers team. He became a regular player the following season, helping the team in any way he could, and he showed flashes of his brilliance, with 15 goals and 31 points. He remained a bright spot with flashes in the following 25-26 season, losing some of the scoring touch but maintaining the point total.
 
-![Mackie Samoskevich's probability card.](figures/Hockey%20Cards/samoskevichcard.jpg){#fig-mackiecard}
+![Mackie Samoskevich's probability card.](../figures/Hockey%20Cards/samoskevichcard.jpg){#fig-mackiecard}
 
 As seen in @fig-mackiecard, the model is absolutely in love with Samoskevich. His Corsi% is top 5 percent of the entire league, and his xG is much more than his actual goal count. His percentiles are incredible, showing a player in the upper echelon of play, but the points still leave something to be desired.
 
 The figure below shows his xG compared to his points throughout his career, showing the meaningful improvement he made from his first full season to his second, but that hasn't been matched with an increased production level.
 
-![Mackie Samoskevich's career trajectory.](figures/samoskevichvis.png){#fig-mackievis}
+![Mackie Samoskevich's career trajectory.](../figures/samoskevichvis.png){#fig-mackievis}
 
 It is obvious there is tons of room to grow for Mackie Samoskevich, the question has always been when. This season might be the answer, as he has been dealt to a more favorable playing-time situation in Seattle. He will get the minutes should he stay healthy, while losing maybe a bit of quality of his linemates. Expect Mackie Samoskevich to feature in the Kraken's top 6, and maybe he will increase his production to a star-level.
 
@@ -423,11 +423,11 @@ It is obvious there is tons of room to grow for Mackie Samoskevich, the question
 
 Another potential slam-dunk pick for a breakout in 26-27 is Penguins young forward Ben Kindel. Kindel, drafted 11th in 2025, exploded on to the scene with a stellar rookie season. His statline is below in @fig-kindelcard.
 
-![Ben Kindel's probability card.](figures/Hockey%20Cards/kindelcard.jpg){#fig-kindelcard}
+![Ben Kindel's probability card.](../figures/Hockey%20Cards/kindelcard.jpg){#fig-kindelcard}
 
 Like Mackie Samoskevich before him, he isn't outscoring his production, which builds an easy path to improvement: just simply match your production level. But, like Wyatt Johnston before him, he shows a flash of what could turn him not just into a star, but into a full out superstar for the Penguins team that desperately needs a young star.
 
-![Ben Kindel's percentiles on important variables](figures/kindelvis.png){#fig-kindelvis}
+![Ben Kindel's percentiles on important variables](../figures/kindelvis.png){#fig-kindelvis}
 
 @fig-kindelvis above shows Ben Kindel's performance on some of the variables the model considered important. Some of these variables were already shown on his probability card, but its worth noting his solid but not extraordinary performance in both PPG and O-Zone Shift%. PPG makes sense, as if it was higher, he'd have no room to break out, but his middle of the road performance in being deployed in the offensive zone shows an easy path to improvement: increased opportunity.
 
@@ -437,11 +437,11 @@ If Ben Kindel was given more opportunity, naturally his goal scoring touch would
 
 Logan Stankoven exploded onto the scene as a Stars prospect, showing incredible promise that led to his involvement in the Mikko Rantanen trade, turning Stankoven into a young threat for the Hurricanes. In his first full season in Carolina, he's put up solid numbers, and helped pave the way for their run all the way to glory in the postseason as a massive contributing factor. But, despite his promise and his skill, his career high points total from this season was just 44 points. The model thinks he can do better.
 
-![Logan Stankoven's probability card.](figures/Hockey%20Cards/stankovencard.jpg){#fig-stankcard}
+![Logan Stankoven's probability card.](../figures/Hockey%20Cards/stankovencard.jpg){#fig-stankcard}
 
 It gives him one of the highest chances of breakout of anyone in the NHL right now, and it's easy to see why. He is in a rare club of goal scorers whose xG is higher than their goals, and his Corsi% is incredible, and as much of that credit has to be given to his play driving ability as it does the quality of his team and his linemates. @fig-stankpct below shows the same percentiles from the card.
 
-![Logan Stankoven's incredible profile compared to the league.](figures/stankovenpct.png){#fig-stankpct}
+![Logan Stankoven's incredible profile compared to the league.](../figures/stankovenpct.png){#fig-stankpct}
 
 Simply put, this profile is incredible. Stankoven is a top 10% NHLer in three incredibly important underlying metrics, but his point production has not reached that of a superstar quite yet. It makes perfect sense for Stankoven's next season to be one where he puts himself further on the map, fueled by the incredible cup run and his incredible play.
 
@@ -449,11 +449,11 @@ Simply put, this profile is incredible. Stankoven is a top 10% NHLer in three in
 
 The final breakout candidate I've chosen to highlight from the top 20 of the precision model is Matthew Wood. Like some of the players before him, Wood is a former first round prospect turned young promising forward for a team that will kindly appreciate his production.
 
-![Matthew Wood's probability card.](figures/Hockey%20Cards/woodcard.jpg){#fig-woodcard}
+![Matthew Wood's probability card.](../figures/Hockey%20Cards/woodcard.jpg){#fig-woodcard}
 
 Unlike some of his peers, however, Matthew Wood does not really pop out as extraordinary. He's plainly above average in every statistic, which provides a different avenue for him to break out and improve: opportunity.
 
-![Matthew Wood compared to the league.](figures/woodvis.png){#fig-woodvis}
+![Matthew Wood compared to the league.](../figures/woodvis.png){#fig-woodvis}
 
 @fig-woodvis highlights this issue. Matthew Wood is above average in Corsi%, xG, and HDxg, but he is severely lacking in the icetime statistic that could otherwise provide him with the opportunity to be a star. If the Predators deploy him more, give him the 15+ minutes of ice time we saw from other breakout candidates, it would not be a shock at all if Matthew Wood finds himself as a young breakout.
 
@@ -494,7 +494,7 @@ From the coverage model, I have identified 3 players that were not in the top 20
 
 Dalibor Dvorsky could be a sneaky breakout in the 26-27 season. Currently set to be the third line center on a Blues team that just added Mason McTavish, Dvorsky showed a bit of upside in his rookie season, finding the back of the net 12 times and boasting a decent underlying profile.
 
-![Dalibor Dvorsky's probability card.](figures/Hockey%20Cards/dvorskycard.jpg){#fig-dvorskycard}
+![Dalibor Dvorsky's probability card.](../figures/Hockey%20Cards/dvorskycard.jpg){#fig-dvorskycard}
 
 The main reason I believe Dvorsky could find improvement in his second season is because of the upcoming opportunity that will be granted to him. The offseason is still young, but it seems now like the Blues are making meaningful improvements to their top 9. They've turned their draft capital and Jordan Kyrou into Mason McTavish and Connor McMichael, and there's a relatively high likelihood they aren't done there. With better linemates, and another year in the NHL under his belt, watch out for Dalibor Dvorsky to have a sneaky 20 goal-40 point season.
 
@@ -502,7 +502,7 @@ The main reason I believe Dvorsky could find improvement in his second season is
 
 Drew O'Connor was a nice bright spot on what was a terrible season for the Vancouver Canucks. With 17 goals and an xG of 19, there's lots of room for O'Connor to develop further as a goal scorer.
 
-![Drew O'Connor's probability card.](figures/Hockey%20Cards/o'connorcard.jpg){#fig-oconnorcard}
+![Drew O'Connor's probability card.](../figures/Hockey%20Cards/o'connorcard.jpg){#fig-oconnorcard}
 
 His Corsi% is his only weak point, something that can both be attributed to him and the team around him, but his ability to create scoring chances is notable. With a (hopefully) increased quality Vancouver Canucks team next season, O'Connor might find himself as a sneaky breakout, much like that of Pavel Zacha from the case studies.
 
@@ -510,9 +510,9 @@ His Corsi% is his only weak point, something that can both be attributed to him 
 
 The final "out-there" breakout pick that was between 20-50 in the coverage model is Gabe Perreault. As a rookie last season, Perreault found decent production, but definitely left more on the table.
 
-![Gabe Perreault's probability card.](figures/Hockey%20Cards/perraultcard.jpg){#fig-perreaultcard}
+![Gabe Perreault's probability card.](../figures/Hockey%20Cards/perraultcard.jpg){#fig-perreaultcard}
 
-With an extra year of development, more games played, and a potential increase in production, Perreault could quickly become a star for a Rangers team that is desperate for one. His 50% Corsi is the first thing that needs to improve, but his rockstar 16% shooting% staying constant with him taking more shots would certainly lead to a breakout.
+With an extra year of development, more games played, and a potential increase in production, Perreault could quickly become a star for a Rangers team that is desperate for one. His 50% Corsi% is the first thing that needs to improve, but his rockstar 16% shooting percentage staying constant with him taking more shots would certainly lead to a breakout.
 
 ## Limitations
 
@@ -542,7 +542,7 @@ Furthermore, there could be a dataset improvement used by incorporating age, lin
 
 This project only focused on forward breakouts. While this decision simplified the process, only creating the need to analyze one group of players, it excludes an entire landscape of NHL players that could be examined.
 
-Future work could develop separate breakout criteria specifically for defenseman, and specific criteria for goalies. For defenseman, this would mean defining value in a much more metric focused way, as offensive production does not necessarily equate to being a good NHL defenseman. For goaltenders, an entirely new dataset could be examined with new criteria and statistics to work with, while learning from the process of this project.
+Future work could develop separate breakout criteria specifically for defensemen, and specific criteria for goalies. For defensemen, this would mean defining value in a much more metric focused way, as offensive production does not necessarily equate to being a good NHL defensemen. For goaltenders, an entirely new dataset could be examined with new criteria and statistics to work with, while learning from the process of this project.
 
 Finally, the most obvious avenue to continue this work is to check back on the model's predictions later in the season, see what it hit on, and see what it didn't hit on, and make predictions for the following season. This would allow the model to have an additional season of data to work with, a new set of breakout candidates to explore, and overall be a fun expansion to this project. The 2026-27 set of breakout candidates represent the first iteration of what can become an annually update forecasting system.
 
@@ -564,14 +564,14 @@ As newer seasons continue to occur, the data can be expanded, the model can be i
 
 The data used in this project come from MoneyPuck.com. More information on the dataset can both be found in the Data Documentation section of this report, as well as the MoneyPuck website itself. Processed datasets as well as the code for feature engineering, model training, and visualizations can be found in the accompanying GitHub repository.
 
-**GitHub Repository:** (link)
+**GitHub Repository:** https://github.com/JacobRasmussen06/nhl-breakout-prediction 
 
 ### B. Feature Definitions
 
 Several variables used and referenced throughout this project were engineered via feature engineering. While they are relatively explained when they came up, the following table summarizes the engineered variables and their definitions.
 
 | Feature | Definition |
-|----|----|
+|------------------------------------|------------------------------------|
 | ppg | Points per game |
 | previous_best_points | Highest previous season point total (otherwise known as career high) |
 | experience | Number of NHL seasons played |
@@ -587,7 +587,7 @@ Several variables used and referenced throughout this project were engineered vi
 
 ### C. Additional Figures
 
-Additional visualizations generated during the creation of this project but excluded from this project due to brevity can be found in the **GitHub** repository in the figures page. (link).
+Additional visualizations generated during the creation of this project but excluded from this project due to brevity can be found in the **GitHub** repository in the /figures page: https://github.com/JacobRasmussen06/nhl-breakout-prediction/tree/main/figures.
 
 ### D. Reproducibility
 
@@ -604,7 +604,3 @@ This project was developed using R and the tidymodels ecosystem. Major packages 
 -   ggthemes
 
 Session information and package versions can be reproduced using the scripts available in the accompanying GitHub repository.
-
-### E. Video
-
-This project was adapted into video format. The video link is accessible here: (link) or can be found on the accompanying repository.

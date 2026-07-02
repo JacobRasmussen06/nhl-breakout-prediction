@@ -154,7 +154,7 @@ breakouts_sum <- breakouts |>
 ##########################################################
 
 # Create and save plot
-ggplot(breakouts_sum) + 
+breakouts_plot <- ggplot(breakouts_sum) + 
   geom_col(aes(x = season, y = breakouts), fill = "black") +
   scale_x_continuous(breaks = seq(2008,2023, by = 1)) +
   labs(

@@ -2,6 +2,12 @@
 title: "Predicting NHL Breakout Forwards Using Machine Learning"
 author: "Jacob Rasmussen"
 format: html
+format: 
+  html: default
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
 editor: visual
 ---
 

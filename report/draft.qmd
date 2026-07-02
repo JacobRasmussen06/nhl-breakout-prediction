@@ -154,7 +154,7 @@ Other important features, such as points per game, Corsi%, or ice time, highligh
 
 By nature of the model, probabilities are produced rather than binary classifications. There is no threshold of probability that makes a player certain to breakout, but the higher the probability, the more sure we can be that a player might break out if given the opportunity.
 
-![](../figures/predvsactual.png){#fig-jitter}
+![Predicted probability to actual outcome.](../figures/predvsactual.png){#fig-jitter}
 
 ![Breakout rate by predicted probability.](../figures/breakoutbyprob.png){#fig-probbyrate}
 

@@ -72,6 +72,8 @@ Once the target variable was defined and a feature set was established, the prob
 
 During the development process, several different machine learning algorithms were considered to create the final model. Logistic regression was first used as a baseline model due to its simplicity and ability to easily be interpreted. Random forests were also heavily considered due to their ability to capture nonlinear relationships and interactions between the variables, prevalent in our feature set. Finally, Extreme Gradient Boosting (XGBoost) models were investigated due to their strong performance on tabular datasets. Their ability to model complex relationships without extensive preprocessing was also a deciding factor.
 
+While Random Forest trees use a method call bagging, building independent trees parallel, training each estimator on a different sample, XGBoost builds its trees sequentially, with each tree correcting the mistakes of the last with gradient.
+
 The usage of multiple different algorithms allowed for the exploration of the strengths and weaknesses of differing approaches to be compared without arbitrarily assuming a single modeling technique would provide the best results.
 
 ### Train and Test Split

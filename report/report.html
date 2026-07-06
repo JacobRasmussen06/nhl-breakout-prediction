@@ -27,25 +27,26 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="draft_files/libs/clipboard/clipboard.min.js"></script>
-<script src="draft_files/libs/quarto-html/quarto.js" type="module"></script>
-<script src="draft_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="draft_files/libs/quarto-html/popper.min.js"></script>
-<script src="draft_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="draft_files/libs/quarto-html/anchor.min.js"></script>
-<link href="draft_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="draft_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="draft_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="draft_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="draft_files/libs/bootstrap/bootstrap-efbb37e9afcc02144ebbc7afd12a776f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="report_files/libs/clipboard/clipboard.min.js"></script>
+<script src="report_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="report_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="report_files/libs/quarto-html/popper.min.js"></script>
+<script src="report_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="report_files/libs/quarto-html/anchor.min.js"></script>
+<link href="report_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="report_files/libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="report_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="report_files/libs/bootstrap/bootstrap-efbb37e9afcc02144ebbc7afd12a776f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 
 
 </head>
 
-<body class="fullcontent quarto-light">
+<body class="quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="report.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -77,7 +78,7 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>Each year in the National Hockey League (NHL), there are players denoted as “breakout players”. Generally, this means that their stat production increased from one year to the next and made them a more valuable contributor to their team. Some of these players were not unexpected; highly touted prospects from the get-go who came with an expectation of stardom, and their production increase feels inevitable. Others, however, unexpectedly break out after years of average production or limited opportunity, making them seemingly appear out of nowhere.</p>
 <p>Correctly identifying these players before their breakouts has long been one of the more difficult aspects of hockey analytics. Traditional statistics such as goals (G) and points (P) are useful for describing the current production of a player, but are often lackluster at indicating the future output of a player. Consequently, analysts have relied on advanced statistics and other metrics alongside the current production to uncover patterns or underlying potential that may lead to future value.</p>
-<p>The goal of this project is to investigate whether machine learning tools are able to successfully identify breakout players before their breakout season occurs. A collection of metrics describing an individual player’s production, both on and beneath the surface, opportunity, and year-to-year development was constructed. Multiple models that classify players as breakout candidates were trained and evaluated.</p>
+<p>The goal of this project is to investigate whether machine learning tools are able to successfully identify breakout players before their breakout season occurs. A collection of metrics describing an individual player’s production, opportunity, and year-to-year development was constructed. Multiple models that classify players as breakout candidates were trained and evaluated.</p>
 <p>In addition to evaluating model performance, this project examines case studies to illustrate the successes and limitations of this approach. Finally, the models were applied to the latest NHL season to identify breakout candidates for next season.</p>
 </section>
 <section id="data-documentation" class="level2">
@@ -109,7 +110,7 @@ Figure&nbsp;1: Number of players classified as breakout players in each season.
 <p>While the MoneyPuck.com dataset contained many valuable statistics, additional variables were engineered to help capture the growth, experience, and development of a player over time. The goal of feature engineering was to quantify how a player’s performance was changing from season to season.</p>
 <section id="production-variables" class="level3">
 <h3 class="anchored" data-anchor-id="production-variables">Production Variables</h3>
-<p>Several statistics to quantify a player’s offensive production were included directly from the original dataset. These variables included goals, expected goals, high-danger expected goals, points per game, and Corsi percentage. These statistics were added because they measure both the on ice raw production of the player and their underlying ability to drive play.</p>
+<p>Several statistics to quantify a player’s offensive production were included directly from the original dataset. These variables included goals, expected goals, high-danger expected goals, points per game, and Corsi percentage. These statistics were added because they measure both the on-ice raw production of the player and their underlying ability to drive play.</p>
 </section>
 <section id="opportunity-variables" class="level3">
 <h3 class="anchored" data-anchor-id="opportunity-variables">Opportunity Variables</h3>
@@ -140,7 +141,7 @@ Figure&nbsp;1: Number of players classified as breakout players in each season.
 </section>
 <section id="hyperparameter-tuning" class="level3">
 <h3 class="anchored" data-anchor-id="hyperparameter-tuning">Hyperparameter Tuning</h3>
-<p>The models hyperparameters were tuned through repeated experimentation. Parameters controlling variables such as tree depth, learning rate, and model complexity were adjusted in order to balance overfitting with performance. The objective of this tuning was to develop the most capable model to handle a new dataset of player-seasons, not just to create the most effective model to maximize performance on the training data.</p>
+<p>The models’ hyperparameters were tuned through repeated experimentation. Parameters controlling variables such as tree depth, learning rate, and model complexity were adjusted in order to balance overfitting with performance. The objective of this tuning was to develop the most capable model to handle a new dataset of player-seasons, not just to create the most effective model to maximize performance on the training data.</p>
 </section>
 <section id="model-selection" class="level3">
 <h3 class="anchored" data-anchor-id="model-selection">Model Selection</h3>
@@ -153,7 +154,7 @@ Figure&nbsp;1: Number of players classified as breakout players in each season.
 <h2 class="anchored" data-anchor-id="model-evaluation">Model Evaluation</h2>
 <p>Evaluating the model’s effectiveness for breakout prediction proved to be a unique challenge because breakout players only represent a very small percentage of total player-seasons at around 3% of all player-seasons with the given parameters. Thus, a model built to maximize accuracy should give all players 0 probability to break out and it would be the most accurate model by far, despite providing no usefulness to solving the problem.</p>
 <p>To rectify this, evaluation of the models primarily focused on two metrics. First, Precision at K (P@K) — sometimes hereafter also referred to as Top K Precision. It represents the proportion of actual breakout players contained in the top K of the model’s ranked list of breakout probabilities. For example, if a model’s top 10 in probability contained 4 true breakout players, it is said to have a P@10 or Top 10 Precision of 4, or 4/10 or 0.4. This method of evaluation was chosen because of its practicality given the problem the project is trying to solve. It directly evaluates how well a given model does at identifying correct breakout candidates, which can be extended and used in the present and future seasons.</p>
-<p>The second metric used was Area Under the Receiver-Operating Curve (AUC). The Receiver-Operating Curve (ROC) is obtained by graphing the True Positive Rate (TPR) over the False Positive Rate (FPR), and the AUC is simply the area under that curve. It represents the probability that the model, if given a random negative result and a random positive result. In this case, it means ranking a player who indeed broke out above a player who did not. Therefore, the scale for AUC is 0 to 1, and a higher AUC indicates the model is better able to distinguish breakout players from non-breakout players.</p>
+<p>The second metric used was Area Under the Receiver-Operating Curve (AUC). The Receiver-Operating Curve (ROC) is obtained by graphing the True Positive Rate (TPR) over the False Positive Rate (FPR), and the AUC is simply the area under that curve. It represents the probability that the model, if given a random negative result and a random positive result, would correctly identify the positive and the negative. In this case, it means ranking a player who indeed broke out above a player who did not. Therefore, the scale for AUC is 0 to 1, and a higher AUC indicates the model is better able to distinguish breakout players from non-breakout players.</p>
 <section id="model-comparison" class="level3">
 <h3 class="anchored" data-anchor-id="model-comparison">Model Comparison</h3>
 <p>During the course of tuning a model, five different versions of XGBoost algorithm with different parameters and features were tested, as well as two different versions of Random Forest and a singular version of logistic regression. Performance of these models was compared using the evaluators AUC and Top-K Precision as explained in the previous section.</p>
@@ -313,10 +314,10 @@ Figure&nbsp;7: Feature importance.
 <div id="fig-jitter" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-jitter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="../figures/predvsactual.png" id="fig-jitter" class="img-fluid figure-img">
+<img src="../figures/predvsactual.png" class="img-fluid figure-img">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-jitter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-jitter-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8: Predicted probability to actual outcome.
 </figcaption>
 </figure>
 </div>
@@ -701,12 +702,12 @@ Figure&nbsp;37: The reason behind Luostarinen’s breakout.
 </section>
 <section id="predictions" class="level2">
 <h2 class="anchored" data-anchor-id="predictions">2026-27 Predictions</h2>
-<p>Now that the model has been calibrated with the historical data and they can now be applied to the 2025-26 season to produce breakout candidates for next season, 26-27. The two models have complimentary perspectives, the precision model being more focused on confidence in breakouts, and the coverage model being more focused on identifying a broad pool of breakout candidates.</p>
+<p>Now that the model has been calibrated with the historical data and they can now be applied to the 2025-26 season to produce breakout candidates for next season, 26-27. The two models have complementary perspectives, the precision model being more focused on confidence in breakouts, and the coverage model being more focused on identifying a broad pool of breakout candidates.</p>
 <section id="precision-model-rankings" class="level3">
 <h3 class="anchored" data-anchor-id="precision-model-rankings">Precision Model Rankings</h3>
-<p>Note, for the following table has some players, such as Matvei Michkov, removed. This is because, for some reason, a small number of players slipped through the cracks despite not being eligible to break out.</p>
+<p>Note, the following table has some players, such as Matvei Michkov, removed. This is because, for some reason, a small number of players slipped through the cracks despite not being eligible to break out.</p>
 <table class="caption-top table">
-<caption>Table 2: XGBoost v4 Precision Model Top 20 Breakout Candidates for 26-27</caption>
+<caption>Table 2: XGBoost v4 Precision Model Top 20 Breakout Candidates for 26-27 (** - 25-26 Rookies)</caption>
 <thead>
 <tr class="header">
 <th>Rank</th>
@@ -722,7 +723,7 @@ Figure&nbsp;37: The reason behind Luostarinen’s breakout.
 </tr>
 <tr class="even">
 <td>2</td>
-<td>Ben Kindel</td>
+<td>Ben Kindel **</td>
 <td>21.9%</td>
 </tr>
 <tr class="odd">
@@ -732,7 +733,7 @@ Figure&nbsp;37: The reason behind Luostarinen’s breakout.
 </tr>
 <tr class="even">
 <td>4</td>
-<td>Emmitt Finnie</td>
+<td>Emmitt Finnie **</td>
 <td>20.2%</td>
 </tr>
 <tr class="odd">
@@ -742,7 +743,7 @@ Figure&nbsp;37: The reason behind Luostarinen’s breakout.
 </tr>
 <tr class="even">
 <td>6</td>
-<td>Ryan Leonard</td>
+<td>Ryan Leonard **</td>
 <td>19.0%</td>
 </tr>
 <tr class="odd">
@@ -777,7 +778,7 @@ Figure&nbsp;37: The reason behind Luostarinen’s breakout.
 </tr>
 <tr class="odd">
 <td>13</td>
-<td>Braeden Bowman</td>
+<td>Braeden Bowman **</td>
 <td>16.4%</td>
 </tr>
 <tr class="even">
@@ -787,7 +788,7 @@ Figure&nbsp;37: The reason behind Luostarinen’s breakout.
 </tr>
 <tr class="odd">
 <td>15</td>
-<td>Matthew Wood</td>
+<td>Matthew Wood **</td>
 <td>15.7%</td>
 </tr>
 <tr class="even">
@@ -802,7 +803,7 @@ Figure&nbsp;37: The reason behind Luostarinen’s breakout.
 </tr>
 <tr class="even">
 <td>18</td>
-<td>Calum Ritchie</td>
+<td>Calum Ritchie **</td>
 <td>14.7%</td>
 </tr>
 <tr class="odd">
@@ -812,7 +813,7 @@ Figure&nbsp;37: The reason behind Luostarinen’s breakout.
 </tr>
 <tr class="even">
 <td>20</td>
-<td>Arseny Gritsyuk</td>
+<td>Arseny Gritsyuk **</td>
 <td>14.0%</td>
 </tr>
 </tbody>
@@ -961,7 +962,7 @@ Figure&nbsp;47: Matthew Wood compared to the league.
 <section id="coverage-model-rankings" class="level3">
 <h3 class="anchored" data-anchor-id="coverage-model-rankings">Coverage Model Rankings</h3>
 <table class="caption-top table">
-<caption>Table 3: XGBoost v4 Coverage Model Top 20 Breakout Candidates 26-27</caption>
+<caption>Table 3: XGBoost v4 Coverage Model Top 20 Breakout Candidates 26-27 (** - 25-26 Rookies)</caption>
 <thead>
 <tr class="header">
 <th>Rank</th>
@@ -987,7 +988,7 @@ Figure&nbsp;47: Matthew Wood compared to the league.
 </tr>
 <tr class="even">
 <td>4</td>
-<td>Ben Kindel</td>
+<td>Ben Kindel **</td>
 <td>23.3%</td>
 </tr>
 <tr class="odd">
@@ -997,7 +998,7 @@ Figure&nbsp;47: Matthew Wood compared to the league.
 </tr>
 <tr class="even">
 <td>6</td>
-<td>Ryan Leonard</td>
+<td>Ryan Leonard **</td>
 <td>21.6%</td>
 </tr>
 <tr class="odd">
@@ -1007,7 +1008,7 @@ Figure&nbsp;47: Matthew Wood compared to the league.
 </tr>
 <tr class="even">
 <td>8</td>
-<td>Emmitt Finnie</td>
+<td>Emmitt Finnie **</td>
 <td>20.2%</td>
 </tr>
 <tr class="odd">
@@ -1042,12 +1043,12 @@ Figure&nbsp;47: Matthew Wood compared to the league.
 </tr>
 <tr class="odd">
 <td>15</td>
-<td>Calum Ritchie</td>
+<td>Calum Ritchie **</td>
 <td>14.4%</td>
 </tr>
 <tr class="even">
 <td>16</td>
-<td>Braeden Bowman</td>
+<td>Braeden Bowman**</td>
 <td>14.2%</td>
 </tr>
 <tr class="odd">
@@ -1067,7 +1068,7 @@ Figure&nbsp;47: Matthew Wood compared to the league.
 </tr>
 <tr class="even">
 <td>20</td>
-<td>Matthew Wood</td>
+<td>Matthew Wood **</td>
 <td>13.6%</td>
 </tr>
 </tbody>

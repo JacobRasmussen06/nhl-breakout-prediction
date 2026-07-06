@@ -1,7 +1,6 @@
 ---
 title: "Predicting NHL Breakout Forwards Using Machine Learning"
 author: "Jacob Rasmussen"
-format: html
 format: 
   html: default
   pdf:
@@ -17,7 +16,7 @@ Each year in the National Hockey League (NHL), there are players denoted as "bre
 
 Correctly identifying these players before their breakouts has long been one of the more difficult aspects of hockey analytics. Traditional statistics such as goals (G) and points (P) are useful for describing the current production of a player, but are often lackluster at indicating the future output of a player. Consequently, analysts have relied on advanced statistics and other metrics alongside the current production to uncover patterns or underlying potential that may lead to future value.
 
-The goal of this project is to investigate whether machine learning tools are able to successfully identify breakout players before their breakout season occurs. A collection of metrics describing an individual player's production, both on and beneath the surface, opportunity, and year-to-year development was constructed. Multiple models that classify players as breakout candidates were trained and evaluated.
+The goal of this project is to investigate whether machine learning tools are able to successfully identify breakout players before their breakout season occurs. A collection of metrics describing an individual player's production, opportunity, and year-to-year development was constructed. Multiple models that classify players as breakout candidates were trained and evaluated.
 
 In addition to evaluating model performance, this project examines case studies to illustrate the successes and limitations of this approach. Finally, the models were applied to the latest NHL season to identify breakout candidates for next season.
 
@@ -49,7 +48,7 @@ While the MoneyPuck.com dataset contained many valuable statistics, additional v
 
 ### Production Variables
 
-Several statistics to quantify a player's offensive production were included directly from the original dataset. These variables included goals, expected goals, high-danger expected goals, points per game, and Corsi percentage. These statistics were added because they measure both the on ice raw production of the player and their underlying ability to drive play.
+Several statistics to quantify a player's offensive production were included directly from the original dataset. These variables included goals, expected goals, high-danger expected goals, points per game, and Corsi percentage. These statistics were added because they measure both the on-ice raw production of the player and their underlying ability to drive play.
 
 ### Opportunity Variables
 
@@ -83,7 +82,7 @@ More specifically, the split was made to achieve a 70-30 split between the train
 
 ### Hyperparameter Tuning
 
-The models hyperparameters were tuned through repeated experimentation. Parameters controlling variables such as tree depth, learning rate, and model complexity were adjusted in order to balance overfitting with performance. The objective of this tuning was to develop the most capable model to handle a new dataset of player-seasons, not just to create the most effective model to maximize performance on the training data.
+The models' hyperparameters were tuned through repeated experimentation. Parameters controlling variables such as tree depth, learning rate, and model complexity were adjusted in order to balance overfitting with performance. The objective of this tuning was to develop the most capable model to handle a new dataset of player-seasons, not just to create the most effective model to maximize performance on the training data.
 
 ### Model Selection
 
@@ -99,7 +98,7 @@ Evaluating the model's effectiveness for breakout prediction proved to be a uniq
 
 To rectify this, evaluation of the models primarily focused on two metrics. First, Precision at K (P\@K) — sometimes hereafter also referred to as Top K Precision. It represents the proportion of actual breakout players contained in the top K of the model's ranked list of breakout probabilities. For example, if a model's top 10 in probability contained 4 true breakout players, it is said to have a P\@10 or Top 10 Precision of 4, or 4/10 or 0.4. This method of evaluation was chosen because of its practicality given the problem the project is trying to solve. It directly evaluates how well a given model does at identifying correct breakout candidates, which can be extended and used in the present and future seasons.
 
-The second metric used was Area Under the Receiver-Operating Curve (AUC). The Receiver-Operating Curve (ROC) is obtained by graphing the True Positive Rate (TPR) over the False Positive Rate (FPR), and the AUC is simply the area under that curve. It represents the probability that the model, if given a random negative result and a random positive result. In this case, it means ranking a player who indeed broke out above a player who did not. Therefore, the scale for AUC is 0 to 1, and a higher AUC indicates the model is better able to distinguish breakout players from non-breakout players.
+The second metric used was Area Under the Receiver-Operating Curve (AUC). The Receiver-Operating Curve (ROC) is obtained by graphing the True Positive Rate (TPR) over the False Positive Rate (FPR), and the AUC is simply the area under that curve. It represents the probability that the model, if given a random negative result and a random positive result, would correctly identify the positive and the negative. In this case, it means ranking a player who indeed broke out above a player who did not. Therefore, the scale for AUC is 0 to 1, and a higher AUC indicates the model is better able to distinguish breakout players from non-breakout players.
 
 ### Model Comparison
 
@@ -356,36 +355,36 @@ After looking at some case studies, the model is now ready to be applied to the 
 
 ## 2026-27 Predictions
 
-Now that the model has been calibrated with the historical data and they can now be applied to the 2025-26 season to produce breakout candidates for next season, 26-27. The two models have complimentary perspectives, the precision model being more focused on confidence in breakouts, and the coverage model being more focused on identifying a broad pool of breakout candidates.
+Now that the model has been calibrated with the historical data and they can now be applied to the 2025-26 season to produce breakout candidates for next season, 26-27. The two models have complementary perspectives, the precision model being more focused on confidence in breakouts, and the coverage model being more focused on identifying a broad pool of breakout candidates.
 
 ### Precision Model Rankings
 
-Note, for the following table has some players, such as Matvei Michkov, removed. This is because, for some reason, a small number of players slipped through the cracks despite not being eligible to break out.
+Note, the following table has some players, such as Matvei Michkov, removed. This is because, for some reason, a small number of players slipped through the cracks despite not being eligible to break out.
 
-| Rank | Player             | Probability |
-|------|--------------------|-------------|
-| 1    | Emil Heineman      | 23.0%       |
-| 2    | Ben Kindel         | 21.9%       |
-| 3    | Mackie Samoskevich | 20.8%       |
-| 4    | Emmitt Finnie      | 20.2%       |
-| 5    | Morgan Frost       | 20.0%       |
-| 6    | Ryan Leonard       | 19.0%       |
-| 7    | Cole Perfetti      | 18.2%       |
-| 8    | Matt Coronato      | 17.8%       |
-| 9    | Zachary Bolduc     | 17.6%       |
-| 10   | Logan Stankoven    | 17.0%       |
-| 11   | Mason McTavish     | 16.8%       |
-| 12   | Alex Laferriere    | 16.6%       |
-| 13   | Braeden Bowman     | 16.4%       |
-| 14   | Vasily Podkolzin   | 15.8%       |
-| 15   | Matthew Wood       | 15.7%       |
-| 16   | Egor Chinakhov     | 14.8%       |
-| 17   | Josh Doan          | 14.8%       |
-| 18   | Calum Ritchie      | 14.7%       |
-| 19   | Dmitri Voronkov    | 14.5%       |
-| 20   | Arseny Gritsyuk    | 14.0%       |
+| Rank | Player               | Probability |
+|------|----------------------|-------------|
+| 1    | Emil Heineman        | 23.0%       |
+| 2    | Ben Kindel \*\*      | 21.9%       |
+| 3    | Mackie Samoskevich   | 20.8%       |
+| 4    | Emmitt Finnie \*\*   | 20.2%       |
+| 5    | Morgan Frost         | 20.0%       |
+| 6    | Ryan Leonard \*\*    | 19.0%       |
+| 7    | Cole Perfetti        | 18.2%       |
+| 8    | Matt Coronato        | 17.8%       |
+| 9    | Zachary Bolduc       | 17.6%       |
+| 10   | Logan Stankoven      | 17.0%       |
+| 11   | Mason McTavish       | 16.8%       |
+| 12   | Alex Laferriere      | 16.6%       |
+| 13   | Braeden Bowman \*\*  | 16.4%       |
+| 14   | Vasily Podkolzin     | 15.8%       |
+| 15   | Matthew Wood \*\*    | 15.7%       |
+| 16   | Egor Chinakhov       | 14.8%       |
+| 17   | Josh Doan            | 14.8%       |
+| 18   | Calum Ritchie \*\*   | 14.7%       |
+| 19   | Dmitri Voronkov      | 14.5%       |
+| 20   | Arseny Gritsyuk \*\* | 14.0%       |
 
-: Table 2: XGBoost v4 Precision Model Top 20 Breakout Candidates for 26-27
+: Table 2: XGBoost v4 Precision Model Top 20 Breakout Candidates for 26-27 (\*\* - 25-26 Rookies)
 
 From Table 2, several interesting developments can be seen. Firstly, nearly every player in the top 20 is a young forward with not much NHL experience. Some, like Ben Kindel, are coming off of their rookie season. Others have a similar outlook to a player like Wyatt Johnston in terms of production level, such as Alex Laferierre or Morgan Frost. These players have already had decent production levels, but the model still thinks they can go even further.
 
@@ -465,30 +464,30 @@ Unlike some of his peers, however, Matthew Wood does not really pop out as extra
 
 ### Coverage Model Rankings
 
-| Rank | Player          | Probability |
-|------|-----------------|-------------|
-| 1    | Mason McTavish  | 30.5%       |
-| 2    | Morgan Frost    | 27.0%       |
-| 3    | Cole Perfetti   | 23.6%       |
-| 4    | Ben Kindel      | 23.3%       |
-| 5    | Logan Stankoven | 23.1%       |
-| 6    | Ryan Leonard    | 21.6%       |
-| 7    | Bobby Brink     | 20.3%       |
-| 8    | Emmitt Finnie   | 20.2%       |
-| 9    | Tommy Novak     | 17.6%       |
-| 10   | Zachary Bolduc  | 17.1%       |
-| 11   | Dawson Mercer   | 16.9%       |
-| 12   | Jake Debrusk    | 16.4%       |
-| 13   | Jack Roslovic   | 15.0%       |
-| 14   | Egor Chinakhov  | 14.7%       |
-| 15   | Calum Ritchie   | 14.4%       |
-| 16   | Braeden Bowman  | 14.2%       |
-| 17   | Simon Holmstrom | 14.0%       |
-| 18   | Connor Zary     | 13.8%       |
-| 19   | Dmitri Voronkov | 13.7%       |
-| 20   | Matthew Wood    | 13.6%       |
+| Rank | Player             | Probability |
+|------|--------------------|-------------|
+| 1    | Mason McTavish     | 30.5%       |
+| 2    | Morgan Frost       | 27.0%       |
+| 3    | Cole Perfetti      | 23.6%       |
+| 4    | Ben Kindel \*\*    | 23.3%       |
+| 5    | Logan Stankoven    | 23.1%       |
+| 6    | Ryan Leonard \*\*  | 21.6%       |
+| 7    | Bobby Brink        | 20.3%       |
+| 8    | Emmitt Finnie \*\* | 20.2%       |
+| 9    | Tommy Novak        | 17.6%       |
+| 10   | Zachary Bolduc     | 17.1%       |
+| 11   | Dawson Mercer      | 16.9%       |
+| 12   | Jake Debrusk       | 16.4%       |
+| 13   | Jack Roslovic      | 15.0%       |
+| 14   | Egor Chinakhov     | 14.7%       |
+| 15   | Calum Ritchie \*\* | 14.4%       |
+| 16   | Braeden Bowman\*\* | 14.2%       |
+| 17   | Simon Holmstrom    | 14.0%       |
+| 18   | Connor Zary        | 13.8%       |
+| 19   | Dmitri Voronkov    | 13.7%       |
+| 20   | Matthew Wood \*\*  | 13.6%       |
 
-: Table 3: XGBoost v4 Coverage Model Top 20 Breakout Candidates 26-27
+: Table 3: XGBoost v4 Coverage Model Top 20 Breakout Candidates 26-27 (\*\* - 25-26 Rookies)
 
 Table 3 above can show us some interesting insights into how the Coverage model operates on a season to season basis. The probabilities are much higher, more like the probabilities from the case studies, but they did taper off and meet with the precision probabilities relatively quickly. A few notable insights: the coverage model included far more players that could be classified as "older" (Jake Debrusk, Jack Roslovic, Tommy Novak) to break out, which could be interpreted as just the model predicting a career year. Similarly, players like Dmitri Voronkov feature on both models, and a breakout threshold for him might just be returning to his form before this season. Another interesting insight is that the precision and coverage models shared more players than they had in the testing dataset in the top 20, perhaps an indicator of how this season's breakout candidates are.
 
@@ -570,7 +569,7 @@ As newer seasons continue to occur, the data can be expanded, the model can be i
 
 The data used in this project come from MoneyPuck.com. More information on the dataset can both be found in the Data Documentation section of this report, as well as the MoneyPuck website itself. Processed datasets as well as the code for feature engineering, model training, and visualizations can be found in the accompanying GitHub repository.
 
-**GitHub Repository:** https://github.com/JacobRasmussen06/nhl-breakout-prediction 
+**GitHub Repository:** https://github.com/JacobRasmussen06/nhl-breakout-prediction
 
 ### B. Feature Definitions
 

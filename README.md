@@ -43,7 +43,7 @@ This project evaluates both created models using Precision@K (or Top-K Precision
 
 The project has over 40 custom visualizations that aid in telling the story of some players, help analyze the model predictions, and help interpret the model. Below are a few examples:
 
-![Wyatt Johnston's Probability Card](/figures/Hockey%20Cards/johnstoncard.jpg)
+![Wyatt Johnston's Probability Card](figures/Hockey%20Cards/johnstoncard.jpg)
 
 Each player who was directly mentioned in this project and given analysis for had a probability card made for them. This card detailed their current statline, their breakout statline (if applicable), as well as their probability for breakout, and was beautified and personalized to the player.
 

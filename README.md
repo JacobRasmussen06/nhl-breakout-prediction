@@ -1,4 +1,11 @@
 # nhl-breakout-prediction
+
+📖 Read the Report: [PDF](https://jacobrasmussen06.github.io/nhl-breakout-prediction/report/report.pdf) &nbsp; [HTML](https://jacobrasmussen06.github.io/nhl-breakout-prediction/report/report.html)
+
+📃 Medium Article (coming very soon)
+
+🎥 YouTube Video (coming soon)
+
 ## Predicting NHL Breakout Forwards Using Machine Learning Techniques and Advanced Hockey Analytics.
 
 Each year in the National Hockey League (NHL), there are players denoted as "breakout players", players whose stat line increases dramatically from one season to the next. Some breakouts are anticipated, while others are more difficult to identify. This project develops two machine learning models that assign probability of breakout to NHL forwards, attempting to predict breakout forwards using player performance and analytics from NHL seasons. 
@@ -13,7 +20,7 @@ Two XGBoost models were trained and balance different objectives:
 - Machine Learning
 - Several engineered features
 - 40+ custom visualizations created with ggplot2 and with photo editing software
-- 10,000 word technical report and an accompanying YouTube video (coming soon)
+- 10,000 word technical report, medium article (coming soon), and an accompanying YouTube video (coming soon)
 
 ## Structure
 ```text
@@ -43,7 +50,7 @@ This project evaluates both created models using Precision@K (or Top-K Precision
 
 The project has over 40 custom visualizations that aid in telling the story of some players, help analyze the model predictions, and help interpret the model. Below are a few examples:
 
-![Wyatt Johnston's Probability Card](/figures/Hockey%20Cards/johnstoncard.jpg)
+![Wyatt Johnston's Probability Card](figures/Hockey%20Cards/johnstoncard.jpg)
 
 Each player who was directly mentioned in this project and given analysis for had a probability card made for them. This card detailed their current statline, their breakout statline (if applicable), as well as their probability for breakout, and was beautified and personalized to the player.
 

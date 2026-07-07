@@ -6,11 +6,15 @@
 
 🎥 YouTube Video (coming soon)
 
+🗃️ [GitHub Repository](https://github.com/JacobRasmussen06/nhl-breakout-prediction)
+
+🔗 [Live Pages](https://jacobrasmussen06.github.io/nhl-breakout-prediction/)
+
 ## Predicting NHL Breakout Forwards Using Machine Learning Techniques and Advanced Hockey Analytics.
 
 Each year in the National Hockey League (NHL), there are players denoted as "breakout players", players whose stat line increases dramatically from one season to the next. Some breakouts are anticipated, while others are more difficult to identify. This project develops two machine learning models that assign probability of breakout to NHL forwards, attempting to predict breakout forwards using player performance and analytics from NHL seasons. 
 
-Two XGBoost models were trained and balance different objectives:
+Two XGBoost models were trained and they balance different objectives:
 - Precision Model: highly precise at the top level of players, accurately assigning high probability to a majority of its top 10 and 20.
 - Coverage Model: casts a far wider net, more accurate at the top 50 level while sacrificing some precision at the top 10 level.
 
@@ -95,4 +99,5 @@ There are several potential avenues for future work in regards to expansion and 
 ## About Me
 
 Name: Jacob Rasmussen
+
 School: Third year at University of Wisconsin - Madison.
